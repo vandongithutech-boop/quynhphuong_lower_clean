@@ -92,8 +92,8 @@
                     <div class="modal fade processing-ticket-detail-modal"
                         id="processingTicketDetailModal{{ ticket.id }}"
                         tabindex="-1"
-                        data-bs-backdrop="false">
-                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                        data-bs-backdrop="static"> 
+                    <div class="modal-dialog modal-dialog-scrollable processing-wide-modal">
                         <div class="modal-content border-0 rounded-4">
 
                             <div class="modal-header">
@@ -275,7 +275,11 @@
         </div>
     {% endif %}
 </div>
+</div> <!-- ĐÓNG page-card -->
 
+<div class="modal fade" id="processingModal" tabindex="-1" data-bs-backdrop="static">
+    <!-- Nội dung modal tạo phiếu sơ chế sẽ được load ở đây -->
+</div>
 <div class="modal fade" id="processingModal" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <form method="post"
@@ -1034,46 +1038,33 @@
 <script src="{% static 'js/apps/processing.js' %}"></script>
 
 <script>
-function cleanProcessingModalBackdrop() {
+function cleanProcessingBackdrops() {
     document.querySelectorAll(".modal-backdrop").forEach(function (backdrop) {
         backdrop.remove();
     });
 
-    document.body.classList.remove("modal-open");
-    document.body.style.removeProperty("overflow");
-    document.body.style.removeProperty("padding-right");
-}
-
-function openProcessingTicketDetailModal(modalId) {
-    cleanProcessingModalBackdrop();
-
-    const modalEl = document.getElementById(modalId);
-
-    if (!modalEl) {
-        return;
+    if (!document.querySelector(".modal.show")) {
+        document.body.classList.remove("modal-open");
+        document.body.style.removeProperty("overflow");
+        document.body.style.removeProperty("padding-right");
     }
-
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl, {
-        backdrop: false,
-        keyboard: true
-    });
-
-    modal.show();
-
-    setTimeout(function () {
-        cleanProcessingModalBackdrop();
-        modalEl.style.zIndex = "3000";
-    }, 80);
 }
 
-document.addEventListener("hidden.bs.modal", function () {
-    cleanProcessingModalBackdrop();
+document.addEventListener("shown.bs.modal", function (event) {
+    const modalId = event.target.id || "";
+
+    if (
+        modalId === "processingModal" ||
+        modalId === "manualProcessingModal" ||
+        modalId === "looseStemMergeModal" ||
+        modalId.startsWith("processingTicketDetailModal")
+    ) {
+        setTimeout(cleanProcessingBackdrops, 60);
+    }
 });
 
-document.addEventListener("click", function (event) {
-    if (event.target.closest(".processing-ticket-detail-modal [data-bs-dismiss='modal']")) {
-        setTimeout(cleanProcessingModalBackdrop, 120);
-    }
+document.addEventListener("hidden.bs.modal", function () {
+    setTimeout(cleanProcessingBackdrops, 120);
 });
 </script>
 {% endblock %}
