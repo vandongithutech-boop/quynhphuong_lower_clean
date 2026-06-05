@@ -324,6 +324,8 @@ def create_processing_ticket(request):
 
             final_stems=final_stems,
             final_bunches=final_bunches,
+
+            compensate_stems=float(item.get("compensate_stems") or 0),
         )
 
         # 1. Trừ kho nguyên liệu
@@ -910,6 +912,8 @@ def create_manual_processing_ticket(request):
 
             final_stems=final_stems,
             final_bunches=final_bunches,
+
+            compensate_stems=float(item.get("compensate_stems") or 0),
         )
 
         # 1. Trừ kho nguyên liệu

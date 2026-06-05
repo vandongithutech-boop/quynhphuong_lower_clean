@@ -77,7 +77,7 @@ class ProcessingTicketItem(models.Model):
     damaged_stems = models.FloatField(default=0, verbose_name="Số cành xả/hủy")
     odd_stems = models.FloatField(default=0, verbose_name="Số cành lẻ")
     extra_stems = models.FloatField(default=0, verbose_name="Số cành thừa")
-
+    compensate_stems = models.FloatField(default=0, verbose_name="Bù cành lẻ khác")
     final_stems = models.FloatField(default=0, verbose_name="Tổng cành thành phẩm")
     final_bunches = models.FloatField(default=0, verbose_name="Số bó thành phẩm")
 

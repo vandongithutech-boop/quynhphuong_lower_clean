@@ -17,21 +17,22 @@
         <div>
             <h4>Báo cáo tồn kho hiện tại</h4>
             <p>Tổng tồn hiện tại theo từng sản phẩm và từng kho.</p>
-            <input type="date"
-                name="from_date"
-                value="{{ from_date|date:'Y-m-d' }}"
-                class="form-control">
-
-            <input type="date"
-                name="to_date"
-                value="{{ to_date|date:'Y-m-d' }}"
-                class="form-control">
             <form method="get" class="report-filter report-filter-inline">
+                <input type="date"
+                    name="from_date"
+                    value="{{ from_date|date:'Y-m-d' }}"
+                    class="form-control">
+
+                <input type="date"
+                    name="to_date"
+                    value="{{ to_date|date:'Y-m-d' }}"
+                    class="form-control">
+
                 <input type="text"
-                       name="q"
-                       value="{{ q }}"
-                       class="form-control"
-                       placeholder="Tìm mã / tên sản phẩm...">
+                    name="q"
+                    value="{{ q }}"
+                    class="form-control"
+                    placeholder="Tìm mã / tên sản phẩm...">
 
                 <select name="warehouse" class="form-select">
                     <option value="">Tất cả kho</option>

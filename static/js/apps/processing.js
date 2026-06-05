@@ -94,6 +94,7 @@ function getItemData(item) {
         processed_stems: Number(item.querySelector('.processed-stems').value || 0),
         damaged_stems: Number(item.querySelector('.damaged-stems').value || 0),
         odd_stems: Number(item.querySelector('.odd-stems').value || 0),
+        compensate_stems: Number(item.querySelector('.compensate-stems')?.value || 0),
         extra_stems: Number(item.querySelector('.extra-stems').value || 0),
         final_stems: Number(item.querySelector('.final-stems').value || 0),
         final_bunches: Number(item.querySelector('.final-bunches').value || 0),
@@ -268,7 +269,8 @@ function calculateItem(item) {
         totalMergedStems = 0;
     }
 
-    const totalOddCombined = odd + totalMergedStems;
+    const compensate = Number(item.querySelector('.compensate-stems')?.value || 0);
+    const totalOddCombined = odd + totalMergedStems + compensate;
 
     let addedBunches = 0;
     let remainingOdd = odd;
@@ -588,7 +590,14 @@ function getManualProductFormHtml(index) {
                     <label class="form-label fw-semibold small text-warning">Cành lẻ tự tính</label>
                     <input type="number" class="form-control form-control-sm manual-odd-stems" value="0" readonly>
                 </div>
-
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold small text-primary">Bù cành lẻ khác</label>
+                    <input type="number"
+                        class="form-control form-control-sm manual-compensate-stems"
+                        value="0"
+                        min="0"
+                        oninput="calculateManualItem(this.closest('.manual-product-item'))">
+                </div>
                 <div class="col-md-2 d-none">
                     <label class="form-label fw-semibold small">Số cành thừa</label>
                     <input type="number" class="form-control form-control-sm manual-extra-stems" value="0" readonly>
@@ -713,26 +722,41 @@ function calculateManualItem(item) {
     const received = Number(item.querySelector('.manual-received-quantity').value || 0);
     const processed = Number(item.querySelector('.manual-processed-stems').value || 0);
     const bunchSize = Number(item.querySelector('.manual-stems-per-bunch').value || 0);
+    const compensate = Number(item.querySelector('.manual-compensate-stems')?.value || 0);
 
     let damaged = received - processed;
     if (damaged < 0) damaged = 0;
 
     let odd = 0;
-    let finalBunches = 0;
+    let baseBunches = 0;
 
     if (bunchSize > 0 && processed > 0) {
-        finalBunches = Math.floor(processed / bunchSize);
+        baseBunches = Math.floor(processed / bunchSize);
         odd = processed % bunchSize;
     } else {
-        finalBunches = 0;
+        baseBunches = 0;
         odd = processed;
     }
 
+    const totalOddCombined = odd + compensate;
+
+    let addedBunches = 0;
+    let remainingOdd = odd;
+
+    if (bunchSize > 0 && totalOddCombined >= bunchSize) {
+        addedBunches = Math.floor(totalOddCombined / bunchSize);
+        remainingOdd = totalOddCombined % bunchSize;
+    }
+
+    const finalBunches = baseBunches + addedBunches;
     const finalStems = finalBunches * bunchSize;
 
     item.querySelector('.manual-damaged-stems').value = damaged;
-    item.querySelector('.manual-odd-stems').value = odd;
+    item.querySelector('.manual-odd-stems').value = remainingOdd;
+
+    // Giữ nguyên logic cũ của số cành thừa
     item.querySelector('.manual-extra-stems').value = 0;
+
     item.querySelector('.manual-final-bunches').value = finalBunches;
     item.querySelector('.manual-final-stems').value = finalStems;
 }
@@ -756,6 +780,8 @@ function getManualItemData(item) {
         processed_stems: Number(item.querySelector('.manual-processed-stems').value || 0),
         damaged_stems: Number(item.querySelector('.manual-damaged-stems').value || 0),
         odd_stems: Number(item.querySelector('.manual-odd-stems').value || 0),
+        compensate_stems: Number(item.querySelector('.manual-compensate-stems')?.value || 0),
+        compensate_stems: Number(item.querySelector('.manual-compensate-stems')?.value || 0),
         extra_stems: Number(item.querySelector('.manual-extra-stems').value || 0),
         final_stems: Number(item.querySelector('.manual-final-stems').value || 0),
         final_bunches: Number(item.querySelector('.manual-final-bunches').value || 0),

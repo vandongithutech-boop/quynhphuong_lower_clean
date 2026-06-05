@@ -928,15 +928,21 @@
         {% endfor %}
     `;
     function getProductFormHtml(index) {
-        return `
-            <div class="processing-item-row border rounded-4 p-3 bg-white mb-3 shadow-smposition-relative" data-index="${index}">
-                <button type="button" class="btn-close position-absolute top-0 end-0 m-3 btn-sm text-danger" onclick="removeProductRow(this)" title="Xóa dòng"></button>
-                <div class="row g-3">
-                    <div class="col-md-5">
-                        <label class="form-label fw-semibold small">Tên hoa / sản phẩm</label>
-                        <select class="form-select product-select form-select-sm" onchange="selectProduct(this)">
-                            <option value="">Chọn sản phẩm từ kho nguyên liệu</option>
-                            {% for product in raw_products %}
+    return `
+        <div class="processing-item-row border rounded-4 p-3 bg-white mb-3 shadow-sm position-relative" data-index="${index}">
+            <button type="button"
+                    class="btn-close position-absolute top-0 end-0 m-3 btn-sm text-danger"
+                    onclick="removeProductRow(this)"
+                    title="Xóa dòng"></button>
+
+            <div class="row g-3">
+
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold small">Tên hoa / sản phẩm</label>
+                    <select class="form-select product-select form-select-sm" onchange="selectProduct(this)">
+                        <option value="">Chọn sản phẩm từ kho nguyên liệu</option>
+
+                        {% for product in raw_products %}
                             <option value="{{ product.id }}"
                                     data-code="{{ product.product_code }}"
                                     data-name="{{ product.product_name }}"
@@ -949,87 +955,137 @@
                                     data-supplier="{{ product.supplier_name|default:'' }}">
                                 ${'{{ product.product_code }}'} / ${'{{ product.product_name }}'} - [${'{{ product.supplier_name }}'}] - tồn ${'{{ product.quantity }}'} ${'{{ product.unit }}'}
                             </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                        {% endfor %}
+                    </select>
+                </div>
 
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold small">Tồn kho nguyên liệu</label>
-                        <input type="number" class="form-control form-control-sm stock-quantity" readonly>
-                    </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold small">Tồn kho nguyên liệu</label>
+                    <input type="number"
+                           class="form-control form-control-sm stock-quantity"
+                           readonly>
+                </div>
 
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold small">Ngày nhập gốc</label>
-                        <input type="text" class="form-control form-control-sm import-date" readonly>
-                    </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold small">Ngày nhập gốc</label>
+                    <input type="text"
+                           class="form-control form-control-sm import-date"
+                           readonly>
+                </div>
 
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold small">Thời gian ngâm (ngày)</label>
-                        <input type="text" class="form-control form-control-sm soaking-days" readonly>
-                    </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold small">Thời gian ngâm</label>
+                    <input type="text"
+                           class="form-control form-control-sm soaking-days"
+                           readonly>
+                </div>
 
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold small">Nhà cung cấp hiện tại</label>
-                        <input type="text" class="form-control form-control-sm supplier-name" readonly>
-                    </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold small">Nhà cung cấp hiện tại</label>
+                    <input type="text"
+                           class="form-control form-control-sm supplier-name"
+                           readonly>
+                </div>
 
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold small text-primary">Số lượng nhận *</label>
-                        <input type="number" class="form-control form-control-sm received-quantity" min="0" onblur="openBunchAfterReceived(this)">
-                    </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold small text-primary">Số lượng nhận *</label>
+                    <input type="number"
+                           class="form-control form-control-sm received-quantity"
+                           min="0"
+                           onblur="openBunchAfterReceived(this)">
+                </div>
 
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold small">Quy cách đóng gói</label>
-                        <input type="text" class="form-control form-control-sm bunch-type" readonly placeholder="Chưa chọn">
-                        <input type="hidden" class="stems-per-bunch">
-                    </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold small">Quy cách đóng gói</label>
+                    <input type="text"
+                           class="form-control form-control-sm bunch-type"
+                           readonly
+                           placeholder="Chưa chọn">
+                    <input type="hidden" class="stems-per-bunch">
+                </div>
 
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold small text-primary">Số cành thực tế sơ chế *</label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" class="form-control processed-stems" min="0" onblur="handleProcessedStemsBlur(this)">
-                            <button class="btn btn-outline-warning btn-trigger-merge d-none" type="button" onclick="triggerOpenLooseStemModal(this)">
-                                <i class="bi bi-patch-plus"></i> Ghép cành lẻ
-                            </button>
-                        </div>
-                    </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold small text-primary">Số cành thực tế sơ chế *</label>
+                    <div class="input-group input-group-sm">
+                        <input type="number"
+                               class="form-control processed-stems"
+                               min="0"
+                               onblur="handleProcessedStemsBlur(this)">
 
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold small text-danger">Số cành xả/hủy</label>
-                        <input type="number" class="form-control form-control-sm damaged-stems" value="0" readonly>
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold small text-warning">Cành lẻ tự tính</label>
-                        <input type="number" class="form-control form-control-sm odd-stems" value="0" readonly>
-                    </div>
-
-                        <div class="col-md-2 d-none">
-                            <label class="form-label fw-semibold small">Số cành thừa</label>
-                            <input type="number" class="form-control form-control-sm extra-stems" value="0" readonly>
-                        </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold small text-success">Tổng cành thành phẩm</label>
-                        <input type="number" class="form-control form-control-sm final-stems" value="0" readonly>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold small text-success">Số bó thành phẩm nhập kho</label>
-                        <input type="number" class="form-control form-control-sm final-bunches" value="0" readonly>
+                        <button class="btn btn-outline-warning btn-trigger-merge d-none"
+                                type="button"
+                                onclick="triggerOpenLooseStemModal(this)">
+                            <i class="bi bi-patch-plus"></i>
+                            Ghép cành lẻ
+                        </button>
                     </div>
                 </div>
 
-                <input type="hidden" class="merge-sources-json" value="[]">
-                <div class="merge-sources-container d-none">
-                    <div class="merge-sources-wrapper small">
-                        <div class="fw-bold text-success mb-1"><i class="bi bi-link-45deg"></i> Danh sách nguồn cành lẻ góp bù vào dòng này:</div>
-                        <ul class="list-unstyled mb-0 merge-sources-list"></ul>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold small text-danger">Số cành xả/hủy</label>
+                    <input type="number"
+                           class="form-control form-control-sm damaged-stems"
+                           value="0"
+                           readonly>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold small text-warning">Cành lẻ tự tính</label>
+                    <input type="number"
+                           class="form-control form-control-sm odd-stems"
+                           value="0"
+                           readonly>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold small text-primary">Bù cành lẻ khác</label>
+                    <input type="number"
+                           class="form-control form-control-sm compensate-stems"
+                           value="0"
+                           min="0"
+                           oninput="calculateItem(this.closest('.product-item'))">
+                </div>
+
+                <div class="col-md-2 d-none">
+                    <label class="form-label fw-semibold small">Số cành thừa</label>
+                    <input type="number"
+                           class="form-control form-control-sm extra-stems"
+                           value="0"
+                           readonly>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold small text-success">Tổng cành thành phẩm</label>
+                    <input type="number"
+                           class="form-control form-control-sm final-stems"
+                           value="0"
+                           readonly>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold small text-success">Số bó thành phẩm nhập kho</label>
+                    <input type="number"
+                           class="form-control form-control-sm final-bunches"
+                           value="0"
+                           readonly>
+                </div>
+
+            </div>
+
+            <input type="hidden" class="merge-sources-json" value="[]">
+
+            <div class="merge-sources-container d-none">
+                <div class="merge-sources-wrapper small">
+                    <div class="fw-bold text-success mb-1">
+                        <i class="bi bi-link-45deg"></i>
+                        Danh sách nguồn cành lẻ góp bù vào dòng này:
                     </div>
+                    <ul class="list-unstyled mb-0 merge-sources-list"></ul>
                 </div>
             </div>
-        `;
-    }
+        </div>
+    `;
+}
 </script>
 
 {% endblock %}
