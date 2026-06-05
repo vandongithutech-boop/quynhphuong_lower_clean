@@ -1102,6 +1102,7 @@
         </div>
     </div>
 </div>
+<div hidden style="display:none !important;">
 <select id="supplierSuggestOptions" class="d-none">
     {% for supplier in suppliers %}
         <option value="{{ supplier.ma_kh }}"
@@ -1155,6 +1156,7 @@
         </option>
     {% endfor %}
 </select>
+</div>
 <script>
     window.productsHH = [
         {% for p in products_hh %}
@@ -1190,7 +1192,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/components/liquid-suggest.js' %}"></script>
 <script src="{% static 'js/apps/inventory.js' %}"></script>
 
 <script>
