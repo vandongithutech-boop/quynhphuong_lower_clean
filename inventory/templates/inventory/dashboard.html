@@ -560,8 +560,10 @@
                                                 class="form-control"
                                                 placeholder="Chọn nhóm hàng trước rồi nhập mã hoặc tên sản phẩm..."
                                                 data-liquid-suggest="product"
-                                                data-liquid-source="#stockInProductOptionsHH"
-                                                data-liquid-display="code-name">
+                                                data-liquid-source=""
+                                                data-liquid-display="code-name"
+                                                onfocus="prepareStockInProductSuggest()"
+                                                oninput="prepareStockInProductSuggest()">
                                         </div>
 
                                         <button type="button"
@@ -1113,7 +1115,19 @@
         </option>
     {% endfor %}
 </select>
-
+<select id="stockInProductOptionsHH" class="d-none">
+    {% for p in products_hh %}
+        <option value="{{ p.code }}"
+                data-code="{{ p.code }}"
+                data-name="{{ p.name }}"
+                data-unit="{{ p.unit|default:'' }}"
+                data-grade=""
+                data-group="HH"
+                data-stock="">
+            {{ p.code }} - {{ p.name }}
+        </option>
+    {% endfor %}
+</select>
 <select id="stockInProductOptionsHP" class="d-none">
     {% for p in products_hp %}
         <option value="{{ p.code }}"
@@ -1180,6 +1194,31 @@
 <script src="{% static 'js/apps/inventory.js' %}"></script>
 
 <script>
+function getStockInSelectedGroup() {
+    const checked = document.querySelector(".product-group-radio:checked");
+    return checked ? checked.value : "";
+}
+
+function prepareStockInProductSuggest() {
+    const productInput = document.getElementById("productInput");
+    const group = getStockInSelectedGroup();
+
+    if (!productInput) return;
+
+    if (group === "HH") {
+        productInput.dataset.liquidSource = "#stockInProductOptionsHH";
+    } else if (group === "HP") {
+        productInput.dataset.liquidSource = "#stockInProductOptionsHP";
+    } else if (group === "VT") {
+        productInput.dataset.liquidSource = "#stockInProductOptionsVT";
+    } else {
+        productInput.dataset.liquidSource = "";
+    }
+
+    if (window.LiquidSuggest) {
+        window.LiquidSuggest.init();
+    }
+}
 document.addEventListener("DOMContentLoaded", function () {
     const productInput = document.getElementById("productInput");
     const unitInput = document.getElementById("unitInput");
@@ -1187,18 +1226,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const stockInModal = document.getElementById("stockInModal");
     const supplierInput = document.getElementById("supplierInput");
 
-    function updateStockInLiquidSource() {
-        const checked = document.querySelector(".product-group-radio:checked");
-        if (!productInput || !checked) return;
+    function updateStockInLiquidSource(shouldClear = true) {
+    const checked = document.querySelector(".product-group-radio:checked");
+    if (!productInput || !checked) return;
 
-        if (checked.value === "HH") {
-            productInput.dataset.liquidSource = "#stockInProductOptionsHH";
-        } else if (checked.value === "HP") {
-            productInput.dataset.liquidSource = "#stockInProductOptionsHP";
-        } else if (checked.value === "VT") {
-            productInput.dataset.liquidSource = "#stockInProductOptionsVT";
-        }
+    if (checked.value === "HH") {
+        productInput.dataset.liquidSource = "#stockInProductOptionsHH";
+    } else if (checked.value === "HP") {
+        productInput.dataset.liquidSource = "#stockInProductOptionsHP";
+    } else if (checked.value === "VT") {
+        productInput.dataset.liquidSource = "#stockInProductOptionsVT";
+    }
 
+    if (shouldClear) {
         productInput.value = "";
         productInput.dataset.code = "";
         productInput.dataset.name = "";
@@ -1206,15 +1246,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (unitInput) unitInput.value = "";
         if (gradeInput) gradeInput.value = "";
-
-        if (window.LiquidSuggest) {
-            window.LiquidSuggest.close();
-            window.LiquidSuggest.init();
-        }
     }
 
+    if (window.LiquidSuggest) {
+        window.LiquidSuggest.close();
+        window.LiquidSuggest.init();
+    }
+}
+
     document.querySelectorAll(".product-group-radio").forEach(function (radio) {
-        radio.addEventListener("change", updateStockInLiquidSource);
+        radio.addEventListener("change", function () {
+            updateStockInLiquidSource(true);
+        });
     });
 
     if (productInput) {
@@ -1264,7 +1307,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const checked = document.querySelector(".product-group-radio:checked");
             if (checked) {
-                updateStockInLiquidSource();
+                updateStockInLiquidSource(false);
             }
         });
     }
