@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="{% static 'css/core/popup.css' %}">
     <link rel="stylesheet" href="{% static 'css/core/responsive.css' %}">
     <link rel="stylesheet" href="{% static 'css/core/modal.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/liquid-suggest.css' %}">
     
 
     {% block extra_css %}{% endblock %}
@@ -104,15 +105,15 @@
         </div>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="{% static 'js/components/liquid-suggest.js' %}"></script>
+
 <script src="{% static 'js/core/popup.js' %}"></script>
 <script src="{% static 'js/apps/popup.js' %}"></script>
 <script src="{% static 'js/apps/custom-select.js' %}"></script>
-
 <script src="{% static 'js/apps/global_purchase_alerts.js' %}"></script>
 <script src="{% static 'js/apps/driver_alert_results.js' %}"></script>
-
 {% block extra_js %}
 {% endblock %}
 

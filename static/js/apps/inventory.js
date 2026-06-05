@@ -167,7 +167,19 @@ function clearProductForm() {
 }
 
 function clearSupplier() {
-    document.getElementById("supplierInput").value = "";
+    const input = document.getElementById("supplierInput");
+
+    if (!input) return;
+
+    input.value = "";
+    input.dataset.code = "";
+    input.dataset.name = "";
+
+    if (window.LiquidSuggest) {
+        window.LiquidSuggest.close();
+    }
+
+    input.focus();
 }
 
 function clearProduct() {
