@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Tổng quan{% endblock %}
+{% block page_title %}Tổng quan{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
+{% endblock %}
+{% block content %}
+
+<div class="dashboard-wrapper">
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card stat-card">
+                <div class="stat-icon bg-soft-green">
+                    <i class="bi bi-bag-check"></i>
+                </div>
+                <div class="stat-label">Tổng đơn hàng</div>
+                <div class="stat-value">{{ total_orders }}</div>
+                <div class="order-sub">Tất cả đơn đã tạo</div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card stat-card">
+                <div class="stat-icon bg-soft-yellow">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="stat-label">Đơn đang xử lý</div>
+                <div class="stat-value">{{ processing_orders }}</div>
+                <div class="order-sub">Chờ xử lý / đóng gói / sản xuất</div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card stat-card">
+                <div class="stat-icon bg-soft-blue">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <div class="stat-label">Dòng tồn kho</div>
+                <div class="stat-value">{{ inventory_items }}</div>
+                <div class="order-sub">Nguyên liệu đang quản lý</div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card stat-card">
+                <div class="stat-icon bg-soft-red">
+                    <i class="bi bi-flower1"></i>
+                </div>
+                <div class="stat-label">Sản xuất hôm nay</div>
+                <div class="stat-value">{{ production_today }}</div>
+                <div class="order-sub">Lệnh sản xuất trong ngày</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-3">
+
+        <div class="col-xl-8">
+            <div class="dashboard-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <div class="section-title">Doanh thu 7 ngày</div>
+                        <div class="order-sub">Theo dõi biến động doanh thu từng ngày</div>
+                    </div>
+                </div>
+
+                <canvas id="revenueChart" height="115"></canvas>
+            </div>
+        </div>
+
+        <div class="col-xl-4">
+            <div class="dashboard-card p-4 h-100">
+                <div class="section-title mb-3">Cảnh báo nhanh</div>
+
+                <div class="alert-row">
+                    <div class="alert-dot bg-warning"></div>
+                    <div class="alert-content">
+                        <strong>{{ waiting_orders }} đơn đang chờ xử lý</strong>
+                        <span>Cần kiểm tra để chuyển qua sản xuất hoặc đóng gói.</span>
+                    </div>
+                </div>
+
+                <div class="alert-row">
+                    <div class="alert-dot bg-primary"></div>
+                    <div class="alert-content">
+                        <strong>{{ packing_orders }} đơn đang đóng gói</strong>
+                        <span>Theo dõi tiến độ chia thùng, packing list và nhãn thùng.</span>
+                    </div>
+                </div>
+
+                <div class="alert-row">
+                    <div class="alert-dot bg-danger"></div>
+                    <div class="alert-content">
+                        <strong>{{ old_inventory_count }} dòng hoa tồn trên 3 ngày</strong>
+                        <span>Cần ưu tiên sơ chế hoặc kiểm tra chất lượng.</span>
+                    </div>
+                </div>
+
+                <div class="alert-row">
+                    <div class="alert-dot bg-success"></div>
+                    <div class="alert-content">
+                        <strong>{{ waiting_productions }} lệnh sản xuất cần theo dõi</strong>
+                        <span>Bao gồm lệnh chờ, đang sản xuất và đang packing.</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-3 mt-1">
+        <div class="col-xl-4">
+
+        <div class="dashboard-card p-4 h-100">
+            <div class="section-title mb-3">
+                Packing đang hoạt động
+            </div>
+
+            <div class="text-center py-4">
+                <h1 class="fw-bold text-primary">
+                    {{ active_packing }}
+                </h1>
+
+                <div class="text-muted">
+                    Đơn đang trong quá trình đóng gói
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-xl-4">
+
+        <div class="dashboard-card p-4 h-100">
+            <div class="section-title mb-3">
+                Top khách hàng
+            </div>
+
+            {% for customer in top_customers %}
+                <div class="customer-row">
+                    <span>
+                        {{ customer.customer|default:"Chưa có tên" }}
+                    </span>
+
+                    <strong>
+                        {{ customer.total }}
+                    </strong>
+                </div>
+            {% empty %}
+                <div class="text-muted">
+                    Chưa có dữ liệu khách hàng.
+                </div>
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    <div class="col-xl-4">
+
+        <div class="dashboard-card p-4 h-100">
+            <div class="section-title mb-3">
+                Hoạt động gần đây
+            </div>
+
+            {% for item in recent_activities %}
+
+                <div class="activity-row">
+
+                    <div class="activity-icon">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+
+                    <div>
+                        <div class="activity-title">
+                            {{ item.title }}
+                        </div>
+
+                        <div class="activity-desc">
+                            {{ item.desc }}
+                        </div>
+                    </div>
+
+                </div>
+
+            {% empty %}
+                <div class="text-muted">
+                    Chưa có hoạt động nào.
+                </div>
+            {% endfor %}
+
+        </div>
+
+    </div>
+        <div class="col-xl-4 col-md-6">
+        <div class="dashboard-card p-4">
+            <div class="section-title mb-3">Trạng thái đơn hàng</div>
+
+            <div class="d-flex justify-content-between py-3 border-bottom">
+                <span class="text-muted">Chờ xử lý</span>
+                <strong class="text-warning">{{ waiting_orders }}</strong>
+            </div>
+
+            <div class="d-flex justify-content-between py-3 border-bottom">
+                <span class="text-muted">Đang đóng gói</span>
+                <strong class="text-primary">{{ packing_orders }}</strong>
+            </div>
+
+            <div class="d-flex justify-content-between py-3">
+                <span class="text-muted">Hoàn thành</span>
+                <strong class="text-success">{{ completed_orders }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+        <div class="dashboard-card p-4">
+            <div class="section-title mb-3">Cảnh báo kho</div>
+
+            <div class="d-flex justify-content-between py-3 border-bottom">
+                <span class="text-muted">Hoa tồn trên 3 ngày</span>
+                <strong class="text-danger">{{ old_inventory_count }}</strong>
+            </div>
+
+            <div class="d-flex justify-content-between py-3">
+                <span class="text-muted">Dòng tồn thấp</span>
+                <strong class="text-warning">{{ low_inventory_count }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-12">
+        <div class="dashboard-card p-4">
+            <div class="section-title mb-3">Sản xuất / Packing</div>
+
+            <div class="d-flex justify-content-between py-3 border-bottom">
+                <span class="text-muted">Sản xuất hôm nay</span>
+                <strong>{{ production_today }}</strong>
+            </div>
+
+            <div class="d-flex justify-content-between py-3">
+                <span class="text-muted">Lệnh cần theo dõi</span>
+                <strong class="text-primary">{{ waiting_productions }}</strong>
+            </div>
+        </div>
+    </div>
+
+        <div class="col-xl-8">
+            <div class="dashboard-card p-4">
+                <div class="section-title mb-3">Đơn hàng mới nhất</div>
+
+                {% for order in latest_orders %}
+                    <div class="order-row">
+                        <div>
+                            <div class="order-code">Đơn #{{ order.id }}</div>
+                            <div class="order-sub">
+                                {{ order.customer|default:"Chưa có khách hàng" }}
+                            </div>
+                        </div>
+                        <div class="status-pill">
+                            {{ order.status|default:"Chưa có trạng thái" }}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="text-muted">Chưa có đơn hàng nào.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-xl-4">
+            <div class="dashboard-card p-4">
+                <div class="section-title mb-3">Sơ chế hôm nay</div>
+
+                <div class="d-flex justify-content-between py-3 border-bottom">
+                    <span class="text-muted">Tổng cành</span>
+                    <strong>{{ today_stems }}</strong>
+                </div>
+
+                <div class="d-flex justify-content-between py-3 border-bottom">
+                    <span class="text-muted">Tổng bó</span>
+                    <strong>{{ today_bunches }}</strong>
+                </div>
+
+                <div class="d-flex justify-content-between py-3">
+                    <span class="text-muted">Lệnh sản xuất</span>
+                    <strong>{{ production_today }}</strong>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{{ chart_labels|json_script:"chart-labels" }}
+{{ chart_values|json_script:"chart-values" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = JSON.parse(document.getElementById("chart-labels").textContent);
+    const values = JSON.parse(document.getElementById("chart-values").textContent);
+
+    new Chart(document.getElementById("revenueChart"), {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Doanh thu",
+                data: values,
+                tension: 0.45,
+                fill: true,
+                borderWidth: 3,
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

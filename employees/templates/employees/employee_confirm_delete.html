@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Xóa nhân viên{% endblock %}
+
+{% block content %}
+<div class="page-card">
+
+    <div class="page-card-header">
+        <div>
+            <h4 class="mb-1 text-danger">
+                <i class="bi bi-trash me-2"></i>
+                Xóa nhân viên
+            </h4>
+            <small>Xác nhận trước khi xóa dữ liệu nhân sự</small>
+        </div>
+
+        <a href="{% url 'employee_list' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Quay lại
+        </a>
+    </div>
+
+    <div class="page-card-body">
+        <div class="delete-box">
+            <div class="delete-icon">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+
+            <h5>Bạn có chắc muốn xóa nhân viên này?</h5>
+
+            <p class="mb-1">
+                <strong>{{ employee.ho_ten }}</strong>
+            </p>
+
+            <small class="text-muted">
+                Mã nhân viên: {{ employee.ma_nv }}
+            </small>
+
+            <form method="post" class="mt-4 d-flex justify-content-center gap-2">
+                {% csrf_token %}
+
+                <a href="{% url 'employee_list' %}" class="btn btn-light">
+                    Hủy
+                </a>
+
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash"></i>
+                    Xóa nhân viên
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,169 @@
+<div class="modal fade" id="vehicleInspectionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <form method="post"
+              action="{% url 'transport:transport_list' %}"
+              class="modal-content rounded-4 border-0">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="vehicle_inspection">
+
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-clipboard2-check text-success me-2"></i>
+                        Kiểm tra xe trước vận hành
+                    </h5>
+                    <div class="text-muted small">
+                        Tài xế kiểm tra từng hạng mục trước khi bắt đầu chạy xe
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label">Ngày kiểm tra</label>
+                        <input type="date" name="check_date" class="form-control" id="checkDate" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Giờ kiểm tra</label>
+                        <input type="time" name="check_time" class="form-control" id="checkTime" required>
+                    </div>
+                </div>
+
+                <div class="inspection-list">
+
+                    <div class="inspection-row">
+                        <div class="inspection-name">
+                            <i class="bi bi-circle"></i>
+                            <span>Lốp xe</span>
+                        </div>
+                        <label class="ios-switch">
+                            <input type="checkbox" name="tire_ok">
+                            <span></span>
+                        </label>
+                        <input type="text" name="tire_note" class="form-control inspection-note" placeholder="Ghi chú nếu có vấn đề">
+                    </div>
+
+                    <div class="inspection-row">
+                        <div class="inspection-name">
+                            <i class="bi bi-box-seam"></i>
+                            <span>Thùng xe</span>
+                        </div>
+                        <label class="ios-switch">
+                            <input type="checkbox" name="box_ok">
+                            <span></span>
+                        </label>
+                        <input type="text" name="box_note" class="form-control inspection-note" placeholder="Ghi chú nếu có vấn đề">
+                    </div>
+
+                    <div class="inspection-row">
+                        <div class="inspection-name">
+                            <i class="bi bi-droplet-half"></i>
+                            <span>Nhớt xe</span>
+                        </div>
+                        <label class="ios-switch">
+                            <input type="checkbox" name="oil_ok">
+                            <span></span>
+                        </label>
+                        <input type="text" name="oil_note" class="form-control inspection-note" placeholder="Ghi chú nếu có vấn đề">
+                    </div>
+
+                    <div class="inspection-row">
+                        <div class="inspection-name">
+                            <i class="bi bi-shield-check"></i>
+                            <span>Kính chắn gió</span>
+                        </div>
+                        <label class="ios-switch">
+                            <input type="checkbox" name="windshield_ok">
+                            <span></span>
+                        </label>
+                        <input type="text" name="windshield_note" class="form-control inspection-note" placeholder="Ghi chú nếu có vấn đề">
+                    </div>
+
+                    <div class="inspection-row fuel-row">
+                        <div class="inspection-name">
+                            <i class="bi bi-fuel-pump"></i>
+                            <div>
+                                <div>Nhiên liệu</div>
+                                <div class="text-muted small fw-normal">Đảm bảo dầu trên 95%</div>
+                            </div>
+                        </div>
+
+                        <label class="ios-switch">
+                            <input type="checkbox" name="fuel_ok" id="fuelOk">
+                            <span></span>
+                        </label>
+
+                        <div class="fuel-fields">
+                            <input type="number"
+                                   name="fuel_percent"
+                                   id="fuelPercent"
+                                   class="form-control inspection-note"
+                                   placeholder="% thực tế"
+                                   min="0"
+                                   max="100">
+
+                            <input type="text"
+                                   name="fuel_note"
+                                   class="form-control inspection-note"
+                                   placeholder="Ghi chú nhiên liệu">
+                        </div>
+                    </div>
+
+                    <div class="inspection-row">
+                        <div class="inspection-name">
+                            <i class="bi bi-lightbulb"></i>
+                            <span>Đèn chiếu sáng</span>
+                        </div>
+                        <label class="ios-switch">
+                            <input type="checkbox" name="light_ok">
+                            <span></span>
+                        </label>
+                        <input type="text" name="light_note" class="form-control inspection-note" placeholder="Ghi chú nếu có vấn đề">
+                    </div>
+
+                    <div class="inspection-row">
+                        <div class="inspection-name">
+                            <i class="bi bi-megaphone"></i>
+                            <span>Còi</span>
+                        </div>
+                        <label class="ios-switch">
+                            <input type="checkbox" name="horn_ok">
+                            <span></span>
+                        </label>
+                        <input type="text" name="horn_note" class="form-control inspection-note" placeholder="Ghi chú nếu có vấn đề">
+                    </div>
+
+                    <div class="inspection-row">
+                        <div class="inspection-name">
+                            <i class="bi bi-geo-alt"></i>
+                            <span>GPS</span>
+                        </div>
+                        <label class="ios-switch">
+                            <input type="checkbox" name="gps_ok">
+                            <span></span>
+                        </label>
+                        <input type="text" name="gps_note" class="form-control inspection-note" placeholder="Ghi chú nếu có vấn đề">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Hủy
+                </button>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle"></i>
+                    Hoàn thành
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>

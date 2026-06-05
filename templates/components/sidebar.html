@@ -1,0 +1,121 @@
+{% load static %}
+<head>
+   
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{% static 'css/auth.css' %}" rel="stylesheet">
+</head>
+<aside class="app-sidebar">
+    <div class="brand-box">
+        <div class="auth-brand-logo">
+            <img src="{% static 'images/logon.png' %}" alt="Logo">
+        </div>
+        <div>
+            <div class="brand-name">QUỲNH PHƯƠNG</div>
+            <div class="brand-sub">Flower Export System</div>
+        </div>
+    </div>
+
+    <div class="nav-title">Quản lý chính</div>
+
+    {% if can_view_dashboard %}
+        <a href="{% url 'dashboard:dashboard' %}"
+           class="sidebar-link {% if request.resolver_match.app_name == 'dashboard' %}active{% endif %}">
+            <i class="bi bi-speedometer2"></i>
+            <span>Tổng quan</span>
+        </a>
+    {% endif %}
+
+    {% if can_view_accounts %}
+        <a href="{% url 'accounts:pending_accounts' %}"
+           class="sidebar-link {% if request.resolver_match.app_name == 'accounts' %}active{% endif %}">
+            <i class="bi bi-person-check"></i>
+            <span>Duyệt tài khoản</span>
+        </a>
+    {% endif %}
+
+    {% if can_view_employees %}
+        <a href="{% url 'employee_list' %}"
+           class="sidebar-link {% if request.resolver_match.url_name == 'employee_list' %}active{% endif %}">
+            <i class="bi bi-person-badge"></i>
+            <span>Nhân sự</span>
+        </a>
+    {% endif %}
+
+    {% if can_view_customers %}
+        <a href="{% url 'categories:customer_list' %}"
+           class="sidebar-link {% if request.resolver_match.url_name == 'customer_list' %}active{% endif %}">
+            <i class="bi bi-people"></i>
+            <span>Khách hàng</span>
+        </a>
+    {% endif %}
+
+        <a href="{% url 'purchases:purchase_order_list' %}"
+            class="sidebar-link {% if request.resolver_match.app_name == 'purchases' %}active{% endif %}">
+                <i class="bi bi-bag-plus"></i>
+                <span>Đặt mua hoa</span>
+        </a>
+        
+    {% if can_view_orders %}
+        <a href="{% url 'orders:order_list' %}"
+           class="sidebar-link {% if request.resolver_match.app_name == 'orders' %}active{% endif %}">
+            <i class="bi bi-cart-check"></i>
+            <span>Đơn hàng</span>
+        </a>
+    {% endif %}
+
+    {% if can_view_production %}
+        <a href="{% url 'production:production_list' %}"
+           class="sidebar-link {% if request.resolver_match.app_name == 'production' %}active{% endif %}">
+            <i class="bi bi-box-seam"></i>
+            <span>Sản xuất</span>
+        </a>
+    {% endif %}
+
+    {% if can_view_categories %}
+        <a href="{% url 'categories:flower_list' %}"
+           class="sidebar-link {% if request.resolver_match.url_name == 'flower_list' %}active{% endif %}">
+            <i class="bi bi-flower1"></i>
+            <span>Loại hoa</span>
+        </a>
+    {% endif %}
+
+    {% if can_view_processing %}
+        <a href="{% url 'processing_list' %}"
+           class="sidebar-link {% if request.resolver_match.url_name == 'processing_list' %}active{% endif %}">
+            <i class="bi bi-scissors"></i>
+            <span>Sơ chế</span>
+        </a>
+    {% endif %}
+
+    {% if can_view_inventory %}
+        <a href="{% url 'inventory:dashboard' %}"
+           class="sidebar-link {% if request.resolver_match.app_name == 'inventory' %}active{% endif %}">
+            <i class="bi bi-boxes"></i>
+            <span>Kho tổng</span>
+        </a>
+    {% endif %}
+
+    {% if can_view_transport %}
+        <a class="sidebar-link {% if request.resolver_match.app_name == 'transport' %}active{% endif %}"
+        href="{% url 'transport:transport_dashboard' %}">
+            <i class="bi bi-truck"></i>
+            <span>Vận chuyển</span>
+        </a>
+        {% endif %}
+
+    {% if can_view_finance %}
+        <a href="#" class="sidebar-link">
+            <i class="bi bi-cash-stack"></i>
+            <span>Doanh thu</span>
+        </a>
+    {% endif %}
+
+    {% if can_view_reports %}
+        <a href="{% url 'reports:dashboard' %}"
+        class="sidebar-link {% if request.resolver_match.app_name == 'reports' %}active{% endif %}">
+            <i class="bi bi-bar-chart"></i>
+            <span>Báo cáo</span>
+        </a>
+    {% endif %}
+</aside>

@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}PKL {{ box.box_code }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/packing.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Packing List</h4>
+        <p class="page-subtitle">
+            {{ production.production_code }} · {{ production.order_code }} · {{ production.customer_name }}
+        </p>
+    </div>
+
+    <a href="{% url 'production:packing_detail' production.id %}" class="btn-back">
+        <i class="bi bi-arrow-left"></i>
+        Quay lại đóng gói
+    </a>
+
+    <a href="{% url 'production:export_packing_list_excel' production.id %}" class="export-excel-btn">
+        <i class="bi bi-file-earmark-excel"></i>
+        Xuất Excel
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Tổng thùng</p>
+                <h3>{{ total_boxes }}</h3>
+            </div>
+            <i class="bi bi-box-seam"></i>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Tổng bó</p>
+                <h3>{{ total_bunches }}</h3>
+            </div>
+            <i class="bi bi-layers"></i>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Tổng cành</p>
+                <h3>{{ total_stems }}</h3>
+            </div>
+            <i class="bi bi-flower1"></i>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>NW / GW</p>
+                <h3>{{ total_nw }} / {{ total_gw }}</h3>
+            </div>
+            <i class="bi bi-speedometer2"></i>
+        </div>
+    </div>
+</div>
+
+<div class="page-card">
+    <div class="page-card-header">
+
+        <div>
+            <h5 class="section-title">
+                <i class="bi bi-file-earmark-spreadsheet"></i>
+                Chi tiết Packing List
+            </h5>
+
+            <p class="section-subtitle">
+                Dữ liệu nền cho xuất khẩu và hải quan
+            </p>
+        </div>
+
+        <div class="header-actions">
+
+            <button onclick="window.print()"
+                    class="print-btn">
+
+                <i class="bi bi-printer"></i>
+                In PKL
+            </button>
+
+            <a href="{% url 'production:export_packing_list_pdf' production.id %}"
+               class="pdf-btn">
+
+                <i class="bi bi-file-earmark-pdf"></i>
+                Xuất PDF
+            </a>
+
+        </div>
+
+    </div>
+   
+    {% for page in pkl_pages %}
+
+        <div class="company-pkl-sheet">
+
+            <div class="company-pkl-header">
+
+                <div class="company-left">
+
+                    <div class="company-logo-area">
+                        <img src="{% static 'images/logon.png' %}" class="company-logo-clean">
+                    </div>
+                    <div>
+                        <div class="company-name">
+                            Quynh Phuong Dalat Co., ltd
+                        </div>
+
+                        <div>42 Van Thanh St, Ward 5, Dalat City</div>
+                        <div>Phone/zalo/X: 0908447323</div>
+                    </div>
+
+                </div>
+
+                <div class="company-right">
+
+                    <div class="header-date">
+                        {% now "d/m/y" %}
+                    </div>
+
+                    <div class="header-qr">
+                        <img src="data:image/png;base64,{{ page.qr_code }}">
+                    </div>
+
+                    <div class="header-customer-code">
+                        {{ production.order.customer_code|default:"K003" }}
+                    </div>
+
+                    <div class="header-box-code">
+                        {{ page.box.box_code }}
+                    </div>
+
+                </div>
+
+            </div>
+            
+
+            <div class="client-info">
+
+                <div class="client-title">
+                    CLIENT
+                </div>
+
+                <div class="client-name">
+                    {{ production.customer_name|linebreaksbr }}
+                </div>
+
+                <div class="client-country">
+                    PHNOM PENH, CAMBODIA
+                </div>
+
+            </div>
+
+            <div class="pkl-product-layout">
+
+                <table class="company-pkl-table">
+                    <thead>
+                        <tr>
+                            <th class="stt-col">STT</th>
+                            <th>SẢN PHẨM</th>
+                            <th class="sl-col">SL</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in page.left_items %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ item.product_name }}</td>
+                                <td>{{ item.stems|floatformat:0 }}</td>
+                            </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+
+                <table class="company-pkl-table">
+                    <thead>
+                        <tr>
+                            <th class="stt-col">STT</th>
+                            <th>SẢN PHẨM</th>
+                            <th class="sl-col">SL</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in page.right_items %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ item.product_name }}</td>
+                                <td>{{ item.stems|floatformat:0 }}</td>
+                            </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+</div>
+
+{% endblock %}

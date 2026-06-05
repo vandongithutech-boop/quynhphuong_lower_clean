@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Đặt mua hoa{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/purchases.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-card">
+    <div class="page-card-header">
+        <div>
+            <h4 class="mb-1">Đặt mua hoa</h4>
+            <p class="text-muted mb-0">
+                Quản lý đơn đặt mua từ kinh doanh đến tài xế và nhập kho
+            </p>
+        </div>
+
+        <button class="btn btn-success"
+                data-bs-toggle="modal"
+                data-bs-target="#purchaseOrderModal"
+                onclick="setPurchaseOrderNow()">
+            <i class="bi bi-plus-circle"></i>
+            Tạo đơn đặt mua
+        </button>
+    </div>
+
+    <div class="page-card-body">
+        <div class="data-list">
+            {% for po in purchase_orders %}
+                <div class="data-item">
+                    <div>
+                        <div class="item-title">{{ po.po_code }}</div>
+                        <div class="item-sub">{{ po.supplier_name }}</div>
+                    </div>
+
+                    <div>
+                        <div class="info-label">Tài xế</div>
+                        <div class="info-value">{{ po.driver_name|default:"-" }}</div>
+                    </div>
+
+                    <div>
+                        <div class="info-label">Trạng thái</div>
+                        <div class="status-pill">{{ po.get_status_display }}</div>
+                    </div>
+
+                    <div>
+                        <div class="info-label">Số sản phẩm</div>
+                        <div class="info-value">{{ po.items.count }}</div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="empty-state">
+                    Chưa có đơn đặt mua nào
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="purchaseOrderModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <form method="post"
+              action="{% url 'purchases:create_purchase_order' %}"
+              class="modal-content">
+            {% csrf_token %}
+
+            <input type="hidden" name="items_json" id="purchaseItemsJson">
+
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-bag-plus me-2"></i>
+                        Tạo đơn đặt mua hoa
+                    </h5>
+                    <div class="small text-muted">
+                        Phòng kinh doanh tạo đơn, sau đó chuyển cho tài xế đi lấy hàng
+                    </div>
+                </div>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <datalist id="roseStemRuleList">
+                    <option value="20"></option>
+                    <option value="30"></option>
+                    <option value="50"></option>
+                    <option value="100"></option>
+                </datalist>
+
+                <div class="row g-3 mb-3">
+
+                    <div class="col-md-12">
+                        <label class="form-label d-block">Nhóm đặt mua</label>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            <label class="btn btn-light border purchase-type-option">
+                                <input type="radio" name="purchase_group" value="HH" checked hidden>
+                                <i class="bi bi-flower1"></i> Hoa hồng
+                            </label>
+
+                            <label class="btn btn-light border purchase-type-option">
+                                <input type="radio" name="purchase_group" value="HP" hidden>
+                                <i class="bi bi-flower2"></i> Hoa/Lá phụ
+                            </label>
+
+                            <label class="btn btn-light border purchase-type-option">
+                                <input type="radio" name="purchase_group" value="VT" hidden>
+                                <i class="bi bi-box"></i> Vật tư
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Nhà cung cấp / Khách hàng cung cấp</label>
+                        <input list="supplierList"
+                               name="supplier"
+                               class="form-control"
+                               placeholder="Nhập mã hoặc tên NCC/KH..."
+                               required>
+
+                        <datalist id="supplierList">
+                            {% for supplier in suppliers %}
+                                <option value="{{ supplier.ma_kh }} - {{ supplier.ten_khach_hang }}"></option>
+                            {% endfor %}
+                        </datalist>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Ngày giờ đặt</label>
+                        <input type="datetime-local"
+                               name="order_datetime"
+                               id="purchaseOrderDateTime"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Trạng thái</label>
+                        <select name="status" class="form-select">
+                            <option value="draft">Chờ tài xế nhận</option>
+                            <option value="assigned_driver">Đã giao tài xế</option>
+                            <option value="waiting_stock_in">Chờ nhập kho</option>
+                            <option value="received">Đã nhập kho</option>
+                            <option value="cancelled">Hủy đặt hàng</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label" id="driverNameLabel">Tên tài xế</label>
+                        <input list="driverList"
+                               name="driver_name"
+                               id="driverNameInput"
+                               class="form-control"
+                               placeholder="Chọn hoặc nhập tên tài xế...">
+
+                        <datalist id="driverList">
+                            {% for driver in drivers %}
+                                <option value="{{ driver.ho_ten }}" data-code="{{ driver.ma_nv }}"></option>
+                            {% endfor %}
+                        </datalist>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label" id="driverCodeLabel">Mã NV tài xế</label>
+                        <input type="text"
+                               name="driver_employee_code"
+                               id="driverCodeInput"
+                               class="form-control"
+                               readonly>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Phương tiện</label>
+                        <select name="vehicle_info" id="vehicleInfoSelect" class="form-select">
+                            <option value="Xe công ty">Xe công ty</option>
+                            <option value="Xe khách">Xe khách</option>
+                            <option value="Khách lẻ">Khách lẻ</option>
+                            <option value="Khách lẻ đến công ty giao hàng">Khách lẻ đến công ty giao hàng</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="purchase-items-box mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="fw-bold mb-1">
+                                <i class="bi bi-flower1 text-success me-1"></i>
+                                Sản phẩm đặt mua
+                            </h6>
+                            <div class="small text-muted">
+                                Nhập sản phẩm rồi bấm thêm để đưa vào hàng đợi
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="purchase-entry-card border rounded-4 p-3 bg-white mb-3">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label">Loại hoa</label>
+                                <input list="purchaseProductList"
+                                       id="purchaseProductInput"
+                                       class="form-control"
+                                       placeholder="Nhập mã hoặc tên hoa..."
+                                       oninput="handlePurchaseEntryProductInput(this)">
+                                <datalist id="purchaseProductList"></datalist>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">Mã hoa</label>
+                                <input type="text" id="purchaseProductCode" class="form-control" readonly>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">ĐVT</label>
+                                <input type="text" id="purchaseProductUnit" class="form-control" value="cành">
+                            </div>
+
+                            <div class="col-md-2" id="purchaseStemRuleWrap">
+                                <label class="form-label">Quy cách bó</label>
+                                <input list="roseStemRuleList"
+                                       type="number"
+                                       id="purchaseStemsPerBundle"
+                                       class="form-control"
+                                       value="50"
+                                       min="1">
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">Số lượng</label>
+                                <input type="number" id="purchaseOrderedQuantity" class="form-control" value="0" min="0" step="0.01">
+                            </div>
+
+                            <div class="col-md-8">
+                                <label class="form-label">Ghi chú</label>
+                                <input type="text"
+                                    id="purchaseItemNote"
+                                    class="form-control"
+                                    placeholder="Ghi chú ngắn nếu có">
+                            </div>
+
+                            <div class="col-md-4">
+                                <button type="button"
+                                        class="btn btn-outline-success w-100"
+                                        onclick="addPurchaseItemToQueue()">
+                                    <i class="bi bi-plus-circle"></i>
+                                    Thêm sản phẩm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive purchase-queue-table-wrap">
+                        <table class="table align-middle mb-0 purchase-queue-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:48px;">#</th>
+                                    <th>Loại hoa</th>
+                                    <th>Mã hoa</th>
+                                    <th>ĐVT</th>
+                                    <th>Quy cách bó</th>
+                                    <th>Số lượng</th>
+                                    <th>Ghi chú</th>
+                                    <th style="width:110px;">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchaseQueueBody">
+                                <tr class="purchase-empty-row">
+                                    <td colspan="8" class="text-center text-muted py-4">
+                                        Chưa có sản phẩm nào trong đơn đặt mua
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                    Đóng
+                </button>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle"></i>
+                    Lưu đơn đặt mua
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal fade" id="purchaseAlertModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title fw-bold text-danger">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Cảnh báo vượt số lượng đặt mua
+                    </h5>
+                    <div class="text-muted small">
+                        Có sản phẩm tài xế nhận cao hơn số lượng phòng kinh doanh đã đặt.
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" id="purchaseAlertBody"></div>
+
+        </div>
+    </div>
+</div>
+<script>
+    const PURCHASE_PRODUCTS = [
+        {% for product in products %}
+            {
+                code: "{{ product.code|escapejs }}",
+                name: "{{ product.name|escapejs }}",
+                unit: "{{ product.unit|default:'cành'|escapejs }}",
+                category_type: "{{ product.category_type|default:''|escapejs }}"
+            },
+        {% endfor %}
+    ];
+
+    const PURCHASE_DRIVERS = [
+        {% for driver in drivers %}
+            {
+                code: "{{ driver.ma_nv|escapejs }}",
+                name: "{{ driver.ho_ten|escapejs }}"
+            },
+        {% endfor %}
+    ];
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/apps/purchases.js' %}"></script>
+<script src="{% static 'js/apps/purchase_alerts.js' %}"></script>
+{% endblock %}

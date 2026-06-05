@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Quản lý tài khoản nhân viên{% endblock %}
+
+{% block extra_css %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{% static 'css/auth.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="page-card">
+
+    <div class="page-card-header">
+        <div>
+            <h4 class="page-title">Quản lý tài khoản nhân viên</h4>
+            <p class="page-subtitle">Duyệt tài khoản, sửa quyền, xóa tài khoản và cấu hình phân quyền hệ thống.</p>
+        </div>
+
+        <button type="button"
+                class="btn btn-light border rounded-pill px-3"
+                data-bs-toggle="modal"
+                data-bs-target="#permissionSettingModal">
+            <i class="bi bi-gear"></i>
+            Cài đặt phân quyền
+        </button>
+    </div>
+
+    <div class="page-card-body">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="apple-section-title mb-3">
+            <i class="bi bi-hourglass-split"></i>
+            Tài khoản chờ duyệt
+        </div>
+
+        {% if pending_accounts %}
+            <div class="modern-list mb-4">
+                {% for account in pending_accounts %}
+                    <div class="modern-list-card">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+
+                            <div>
+                                <div class="fw-bold fs-5">
+                                    {{ account.employee.ho_ten }}
+                                </div>
+
+                                <div class="text-muted small">
+                                    Mã NV: {{ account.employee.ma_nv }}
+                                    · Bộ phận: {{ account.employee.bo_phan|default:"Chưa có dữ liệu" }}
+                                    · Chức vụ: {{ account.employee.chuc_vu|default:"Chưa có dữ liệu" }}
+                                </div>
+
+                                <div class="mt-2">
+                                    <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                                    <span class="badge bg-light text-dark border">
+                                        Username: {{ account.user.username }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <form method="post"
+                                  action="{% url 'accounts:approve_account' account.id %}"
+                                  class="d-flex gap-2 align-items-center flex-wrap">
+                                {% csrf_token %}
+
+                                <select name="group" class="form-select form-select-sm" required>
+                                    <option value="">-- Chọn quyền --</option>
+                                    {% for group in groups %}
+                                        <option value="{{ group.id }}">
+                                            {{ group.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="bi bi-check2-circle"></i>
+                                    Duyệt
+                                </button>
+
+                                <a href="{% url 'accounts:reject_account' account.id %}"
+                                   class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-x-circle"></i>
+                                    Từ chối
+                                </a>
+                            </form>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state text-center py-4 mb-4">
+                <div class="fs-1 mb-2">✅</div>
+                <h5>Không có tài khoản chờ duyệt</h5>
+                <p class="text-muted mb-0">Khi nhân viên đăng ký, tài khoản sẽ xuất hiện tại đây.</p>
+            </div>
+        {% endif %}
+
+        <div class="apple-section-title mb-3">
+            <i class="bi bi-person-check"></i>
+            Tài khoản đã duyệt
+        </div>
+
+        {% if approved_accounts %}
+            <div class="modern-list">
+                {% for account in approved_accounts %}
+                    <div class="modern-list-card">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+
+                            <div>
+                                <div class="fw-bold fs-5">
+                                    {{ account.employee.ho_ten }}
+                                </div>
+
+                                <div class="text-muted small">
+                                    Mã NV: {{ account.employee.ma_nv }}
+                                    · Bộ phận: {{ account.employee.bo_phan|default:"Chưa có dữ liệu" }}
+                                    · Chức vụ: {{ account.employee.chuc_vu|default:"Chưa có dữ liệu" }}
+                                </div>
+
+                                <div class="mt-2">
+                                    <span class="badge bg-success">Đã duyệt</span>
+
+                                    <span class="badge bg-light text-dark border">
+                                        Username: {{ account.user.username }}
+                                    </span>
+
+                                    {% for group in account.user.groups.all %}
+                                        <span class="badge bg-primary">
+                                            {{ group.name }}
+                                        </span>
+                                    {% empty %}
+                                        <span class="badge bg-secondary">
+                                            Chưa có quyền
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2 align-items-center flex-wrap">
+
+                                <form method="post"
+                                      action="{% url 'accounts:update_account_group' account.id %}"
+                                      class="d-flex gap-2 align-items-center">
+                                    {% csrf_token %}
+
+                                    <select name="group" class="form-select form-select-sm" required>
+                                        <option value="">-- Sửa quyền --</option>
+                                        {% for group in groups %}
+                                            <option value="{{ group.id }}">
+                                                {{ group.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <button type="submit" class="btn btn-outline-success btn-sm">
+                                        <i class="bi bi-pencil-square"></i>
+                                        Sửa
+                                    </button>
+                                </form>
+
+                                <form method="post"
+                                      action="{% url 'accounts:delete_account' account.id %}"
+                                      onsubmit="return confirm('Bạn có chắc muốn xóa tài khoản này không?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i>
+                                        Xóa
+                                    </button>
+                                </form>
+
+                            </div>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state text-center py-4">
+                <div class="fs-1 mb-2">👤</div>
+                <h5>Chưa có tài khoản đã duyệt</h5>
+                <p class="text-muted mb-0">Sau khi admin duyệt, tài khoản sẽ xuất hiện tại đây.</p>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <h6 class="fw-bold mb-3">
+            <i class="bi bi-plus-circle"></i>
+            Thêm module phân quyền mới
+        </h6>
+
+        <form method="post" action="{% url 'accounts:create_system_module' %}" class="row g-2">
+            {% csrf_token %}
+
+            <div class="col-md-4">
+                <input type="text"
+                       name="module_key"
+                       class="form-control"
+                       placeholder="Mã module, ví dụ: export_customs"
+                       required>
+            </div>
+
+            <div class="col-md-5">
+                <input type="text"
+                       name="module_label"
+                       class="form-control"
+                       placeholder="Tên hiển thị, ví dụ: Hải quan xuất khẩu"
+                       required>
+            </div>
+
+            <div class="col-md-2">
+                <input type="number"
+                       name="sort_order"
+                       class="form-control"
+                       placeholder="STT"
+                       value="0">
+            </div>
+
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-success w-100">
+                    <i class="bi bi-plus"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="permissionSettingModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4">
+
+            <form method="post" action="{% url 'accounts:update_role_permissions' %}">
+                {% csrf_token %}
+
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title fw-bold">
+                            <i class="bi bi-gear"></i>
+                            Cài đặt phân quyền hệ thống
+                        </h5>
+                        <div class="text-muted small">
+                            Chọn module mà từng nhóm quyền được phép truy cập.
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Module</th>
+                                    {% for role in role_names %}
+                                        <th class="text-center">{{ role }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for module in module_rows %}
+                                    <tr>
+                                        <td class="fw-bold">
+                                            {{ module.label }}
+                                        </td>
+
+                                        {% for role in module.roles %}
+                                            <td class="text-center">
+                                                <input type="checkbox"
+                                                       class="form-check-input"
+                                                       name="permissions"
+                                                       value="{{ role.value }}"
+                                                       {% if role.checked %}checked{% endif %}>
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="alert alert-warning mt-3 mb-0">
+                        <strong>Lưu ý:</strong>
+                        ADMIN nên luôn được giữ toàn quyền để tránh khóa nhầm hệ thống.
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        Đóng
+                    </button>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check2-circle"></i>
+                        Lưu phân quyền
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

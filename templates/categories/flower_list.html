@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+
+{% block title %}Loại hoa{% endblock %}
+{% block page_title %}Quản lý loại hoa{% endblock %}
+{% block page_subtitle %}Danh sách và quản lý toàn bộ loại hoa trong hệ thống{% endblock %}
+
+{% block content %}
+
+<div class="page-card">
+
+    <div class="page-card-header">
+
+        <div>
+            <h3 class="page-card-title">
+                Danh sách loại hoa
+            </h3>
+
+            <div class="mt-2">
+                <span class="status-pill">
+                    <i class="bi bi-flower1"></i>
+                    Tổng số: {{ total_flowers }} loại hoa
+                </span>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+
+            <a href="{% url 'categories:flower_list' %}"
+               class="btn {% if not filter_type and not keyword %}btn-success{% else %}btn-outline-success{% endif %}">
+                Tất cả
+            </a>
+
+            <a href="{% url 'categories:flower_list' %}?type=HH{% if keyword %}&q={{ keyword }}{% endif %}"
+               class="btn {% if filter_type == 'HH' %}btn-success{% else %}btn-outline-success{% endif %}">
+                Hoa Hồng
+            </a>
+
+            <a href="{% url 'categories:flower_list' %}?type=HP{% if keyword %}&q={{ keyword }}{% endif %}"
+               class="btn {% if filter_type == 'HP' %}btn-success{% else %}btn-outline-success{% endif %}">
+                Hoa/Lá phụ
+            </a>
+
+            <a href="{% url 'categories:flower_create' %}" class="btn btn-warning">
+                <i class="bi bi-plus-circle"></i>
+                Thêm loại hoa
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="page-card-body">
+
+        <!-- SEARCH -->
+
+        <form method="get" class="filter-bar mb-4">
+
+            {% if filter_type %}
+                <input type="hidden" name="type" value="{{ filter_type }}">
+            {% endif %}
+
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ keyword }}"
+                    class="form-control"
+                    placeholder="Tìm theo tên hoa..."
+                    list="flowerSuggestions"
+                    autocomplete="off"
+                >
+            </div>
+
+            <datalist id="flowerSuggestions">
+                {% for flower in suggestion_flowers %}
+                    <option value="{{ flower.name }}">
+                        {{ flower.code }} |
+                        {{ flower.color }} |
+                        {{ flower.origin }} |
+                        {{ flower.unit }}
+                    </option>
+                {% endfor %}
+            </datalist>
+
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-search"></i>
+                Tìm kiếm
+            </button>
+
+            {% if keyword %}
+            <a href="{% url 'categories:flower_list' %}{% if filter_type %}?type={{ filter_type }}{% endif %}"
+               class="btn btn-outline-secondary">
+                Xóa tìm kiếm
+            </a>
+            {% endif %}
+
+        </form>
+
+        <!-- LIST -->
+
+        <div class="data-list">
+
+            {% for flower in flowers %}
+
+            <div class="data-item">
+
+                <!-- LEFT -->
+
+                <div>
+
+                    <div class="d-flex align-items-center gap-2 mb-2">
+
+                        <span class="status-pill">
+                            {{ flower.code|default:"NO CODE" }}
+                        </span>
+
+                        {% if flower.category_type %}
+                        <span class="badge bg-light text-success border">
+                            {{ flower.category_type }}
+                        </span>
+                        {% endif %}
+
+                    </div>
+
+                    <div class="item-title">
+                        {{ flower.name|default:"Chưa có dữ liệu" }}
+                    </div>
+
+                    <div class="item-sub">
+
+                        {% if flower.color %}
+                            {{ flower.color }}
+                        {% else %}
+                            <span class="empty-data">chưa có dữ liệu</span>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                <!-- INFO 1 -->
+
+                <div>
+
+                    <div class="info-label">
+                        Xuất xứ
+                    </div>
+
+                    <div class="info-value">
+                        {% if flower.origin %}
+                            {{ flower.origin }}
+                        {% else %}
+                            <span class="empty-data">chưa có dữ liệu</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="info-label mt-3">
+                        Chiều dài
+                    </div>
+
+                    <div class="info-value">
+                        {% if flower.stem_length %}
+                            {{ flower.stem_length }}
+                        {% else %}
+                            <span class="empty-data">chưa có dữ liệu</span>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <!-- INFO 2 -->
+
+                <div>
+
+                    <div class="info-label">
+                        Đơn vị tính
+                    </div>
+
+                    <div class="info-value">
+                        {% if flower.unit %}
+                            {{ flower.unit }}
+                        {% else %}
+                            <span class="empty-data">chưa có dữ liệu</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="info-label mt-3">
+                        Hao hụt sơ chế
+                    </div>
+
+                    <div class="info-value">
+                        {% if flower.processing_loss_rate %}
+                            {{ flower.processing_loss_rate }} %
+                        {% else %}
+                            <span class="empty-data">chưa có dữ liệu</span>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <!-- ACTION -->
+
+                <div class="action-group">
+
+                    <a href="{% url 'categories:flower_update' flower.id %}"
+                       class="icon-btn"
+                       title="Sửa">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+
+                    <a href="{% url 'categories:flower_delete' flower.id %}"
+                       class="icon-btn"
+                       title="Xóa">
+                        <i class="bi bi-trash"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="text-center py-5">
+
+                <div class="mb-3">
+                    <i class="bi bi-flower1" class="empty-icon bi bi-flower1"></i>
+                </div>
+
+                <h5 class="fw-bold">
+                    Chưa có dữ liệu loại hoa
+                </h5>
+
+                <div class="text-muted mb-4">
+                    Hệ thống hiện chưa có loại hoa nào.
+                </div>
+
+                <a href="{% url 'categories:flower_create' %}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i>
+                    Thêm loại hoa đầu tiên
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

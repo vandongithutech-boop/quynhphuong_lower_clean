@@ -1,0 +1,1079 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sơ chế{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/processing.css' %}">
+<style>
+    /* CSS bổ trợ hiển thị khay nguồn cành lẻ đóng góp */
+    .merge-sources-wrapper {
+        background-color: #f8f9fa;
+        border-left: 4px solid #198754;
+        padding: 10px 15px;
+        border-radius: 0 8px 8px 0;
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-card">
+    <div class="page-card-header">
+        <div>
+            <h4 class="page-card-title mb-1">
+                <i class="bi bi-scissors me-2"></i>
+                Sơ chế
+            </h4>
+            <div class="page-card-subtitle">
+                Quản lý phiếu sơ chế từ kho nguyên liệu sang kho thành phẩm
+            </div>
+        </div>
+
+        <div class="page-card-actions d-flex gap-2">
+            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#manualProcessingModal">
+                <i class="bi bi-pencil-square me-1"></i>
+                Nhập SC thủ công
+            </button>
+
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#processingModal">
+                <i class="bi bi-plus-circle me-1"></i>
+                Tạo phiếu sơ chế
+            </button>
+        </div>
+    </div>
+
+    <div class="page-card-body">
+    {% if tickets %}
+        <div class="row g-3">
+            {% for ticket in tickets %}
+
+                <div class="col-md-6 col-xl-4">
+                    <div class="processing-ticket-card h-100">
+
+                        <button type="button"
+                                class="processing-ticket-detail-btn"
+                                onclick="openProcessingTicketDetailModal('processingTicketDetailModal{{ ticket.id }}')"
+                                title="Xem chi tiết phiếu sơ chế">
+                            <i class="bi bi-journal-text"></i>
+                        </button>
+
+                        <div class="d-flex justify-content-between align-items-start mb-2 pe-5">
+                            <div>
+                                <div class="fw-bold text-success">
+                                    {{ ticket.employee_name }}
+                                </div>
+                                <div class="small text-muted">
+                                    {{ ticket.employee_code }} - {{ ticket.employee_position }}
+                                </div>
+                            </div>
+
+                            <span class="badge bg-success-subtle text-success">
+                                {{ ticket.total_work_hours|default:ticket.total_hours|floatformat:2 }} giờ
+                            </span>
+                        </div>
+
+                        <div class="small text-muted">
+                            Bắt đầu: {{ ticket.start_time|date:"d/m/Y H:i" }}
+                        </div>
+                        <div class="small text-muted">
+                            Hoàn thành: {{ ticket.end_time|date:"d/m/Y H:i" }}
+                        </div>
+
+                        <hr>
+
+                        <div class="small">
+                            <strong>Số sản phẩm:</strong> {{ ticket.items.count }}
+                        </div>
+                    </div>
+                </div>
+
+                    <div class="modal fade processing-ticket-detail-modal"
+                        id="processingTicketDetailModal{{ ticket.id }}"
+                        tabindex="-1"
+                        data-bs-backdrop="false">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                        <div class="modal-content border-0 rounded-4">
+
+                            <div class="modal-header">
+                                <div>
+                                    <h5 class="modal-title fw-bold">
+                                        <i class="bi bi-journal-text me-2"></i>
+                                        Chi tiết phiếu sơ chế - {{ ticket.employee_name }}
+                                    </h5>
+                                    <div class="small opacity-75">
+                                        Mã phiếu: {{ ticket.ticket_code }} • Số sản phẩm: {{ ticket.items.count }}
+                                    </div>
+                                </div>
+
+                                <button type="button"
+                                        class="btn-close btn-close-white"
+                                        data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body bg-light">
+
+                                <div class="processing-ticket-detail-card mb-3">
+                                    <div class="processing-ticket-detail-main">
+                                        <div>
+                                            <div class="fw-bold text-success">
+                                                <i class="bi bi-person-badge me-1"></i>
+                                                {{ ticket.employee_name }}
+                                            </div>
+                                            <div class="small text-muted">
+                                                {{ ticket.employee_code }} - {{ ticket.employee_position }}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div class="detail-label">Mã phiếu</div>
+                                            <div class="detail-value">{{ ticket.ticket_code }}</div>
+                                        </div>
+
+                                        <div>
+                                            <div class="detail-label">Ngày nghiệp vụ</div>
+                                            <div class="detail-value">{{ ticket.business_date|date:"d/m/Y" }}</div>
+                                        </div>
+
+                                        <div>
+                                            <div class="detail-label">Thời gian tạo phiếu</div>
+                                            <div class="detail-value">{{ ticket.start_time|date:"d/m/Y H:i" }}</div>
+                                        </div>
+
+                                        <div>
+                                            <div class="detail-label">Hoàn thành</div>
+                                            <div class="detail-value">{{ ticket.end_time|date:"d/m/Y H:i" }}</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="processing-ticket-shift-grid">
+                                        <div class="shift-box">
+                                            <span>Ca 1</span>
+                                            <strong>
+                                                {% if ticket.shift1_start and ticket.shift1_end %}
+                                                    {{ ticket.shift1_start|date:"H:i" }} - {{ ticket.shift1_end|date:"H:i" }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </strong>
+                                            <small>{{ ticket.shift1_hours|floatformat:2 }} giờ</small>
+                                        </div>
+
+                                        <div class="shift-box">
+                                            <span>Ca 2</span>
+                                            <strong>
+                                                {% if ticket.shift2_start and ticket.shift2_end %}
+                                                    {{ ticket.shift2_start|date:"H:i" }} - {{ ticket.shift2_end|date:"H:i" }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </strong>
+                                            <small>{{ ticket.shift2_hours|floatformat:2 }} giờ</small>
+                                        </div>
+
+                                        <div class="shift-box total">
+                                            <span>Tổng giờ làm</span>
+                                            <strong>{{ ticket.total_work_hours|floatformat:2 }} giờ</strong>
+                                            <small>Giờ tính lương</small>
+                                        </div>
+
+                                        <div class="shift-box overtime">
+                                            <span>Tăng ca</span>
+                                            <strong>{{ ticket.overtime_hours|floatformat:2 }} giờ</strong>
+                                            <small>Vượt 8 giờ/ngày</small>
+                                        </div>
+
+                                        <div class="shift-box note">
+                                            <span>Ghi chú</span>
+                                            <strong>{{ ticket.work_note|default:"-" }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="processing-product-table-card">
+                                    <div class="processing-product-table-head">
+                                        <div>
+                                            <h6 class="mb-1">
+                                                <i class="bi bi-flower1 me-2"></i>
+                                                Danh sách sản phẩm đã sơ chế
+                                            </h6>
+                                            <p class="mb-0">
+                                                Chi tiết số lượng nhận, hao hụt, cành lẻ và thành phẩm nhập kho.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="processing-product-table-wrap">
+                                        <table class="processing-product-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Mã SP</th>
+                                                    <th>Tên sản phẩm</th>
+                                                    <th>ĐVT</th>
+                                                    <th>Quy cách</th>
+                                                    <th class="text-end">SL nhận</th>
+                                                    <th class="text-end">Cành sơ chế</th>
+                                                    <th class="text-end">Xả/Hủy</th>
+                                                    <th class="text-end">Cành lẻ</th>
+                                                    <th class="text-end">Cành TP</th>
+                                                    <th class="text-end">Bó TP</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                {% for item in ticket.items.all %}
+                                                    <tr>
+                                                        <td>{{ forloop.counter }}</td>
+                                                        <td class="code-cell">{{ item.product_code }}</td>
+                                                        <td class="name-cell">{{ item.product_name }}</td>
+                                                        <td>{{ item.unit|default:"-" }}</td>
+                                                        <td>{{ item.bunch_type|default:"-" }}</td>
+                                                        <td class="text-end">{{ item.received_quantity|floatformat:0 }}</td>
+                                                        <td class="text-end">{{ item.processed_stems|floatformat:0 }}</td>
+                                                        <td class="text-end text-danger">{{ item.damaged_stems|floatformat:0 }}</td>
+                                                        <td class="text-end text-warning">{{ item.odd_stems|floatformat:0 }}</td>
+                                                        <td class="text-end text-success fw-bold">{{ item.final_stems|floatformat:0 }}</td>
+                                                        <td class="text-end fw-bold">{{ item.final_bunches|floatformat:0 }}</td>
+                                                    </tr>
+                                                {% empty %}
+                                                    <tr>
+                                                        <td colspan="11" class="text-center text-muted py-4">
+                                                            Phiếu này chưa có sản phẩm sơ chế.
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer bg-white rounded-bottom-4">
+                                <button type="button"
+                                        class="btn btn-light"
+                                        data-bs-dismiss="modal">
+                                    Đóng
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-scissors display-4 text-success"></i>
+            <h5 class="mt-3 fw-bold">Chưa có phiếu sơ chế</h5>
+            <p class="text-muted mb-0">
+                Bấm “Tạo phiếu sơ chế” để bắt đầu ghi nhận dữ liệu sơ chế.
+            </p>
+        </div>
+    {% endif %}
+</div>
+
+<div class="modal fade" id="processingModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <form method="post"
+              action="{% url 'create_processing_ticket' %}"
+              id="processingForm"
+              class="modal-content border-0 rounded-4">
+            {% csrf_token %}
+
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-scissors me-2"></i>
+                        Tạo phiếu sơ chế
+                    </h5>
+                    <div class="small opacity-75">
+                        Chọn nhân viên trước, sau đó nhập các sản phẩm sơ chế
+                    </div>
+                </div>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body bg-light">
+
+                <input type="hidden" name="employee_code" id="employeeCode">
+                <input type="hidden" name="employee_name" id="employeeName">
+                <input type="hidden" name="employee_position" id="employeePosition">
+                <input type="hidden" name="start_time" id="startTime">
+                <input type="hidden" name="items_json" id="itemsJson">
+
+                <div class="processing-employee-panel mb-3">
+
+                    <div class="processing-employee-head">
+                        <div>
+                            <div class="processing-section-title">
+                                <i class="bi bi-person-badge me-2"></i>
+                                Nhân viên sơ chế
+                            </div>
+                            <div class="processing-section-sub">
+                                Chọn nhân viên để bắt đầu tính giờ sơ chế
+                            </div>
+                        </div>
+
+                        <div class="processing-time-pill">
+                            <i class="bi bi-clock-history"></i>
+                            <input type="text"
+                                   id="workingTimeDisplay"
+                                   value="Chưa bắt đầu"
+                                   readonly>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 align-items-end">
+                        <div class="col-lg-8">
+                            <label class="form-label fw-semibold">
+                                Nhân viên <span class="text-danger">*</span>
+                            </label>
+
+                            <select class="form-select processing-select"
+                                    id="employeeSelect"
+                                    required
+                                    onchange="handleEmployeeChange(this)">
+                                <option value="">Chọn nhân viên sơ chế</option>
+
+                                {% for employee in employees %}
+                                    <option value="{{ employee.ma_nv }}"
+                                            data-code="{{ employee.ma_nv }}"
+                                            data-name="{{ employee.ho_ten }}"
+                                            data-position="{{ employee.chuc_vu }}">
+                                        {{ employee.ma_nv }} - {{ employee.ho_ten }} - {{ employee.chuc_vu }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="processing-status-box processing-start-box">
+                                <div class="small text-muted">
+                                    Thời gian bắt đầu sơ chế
+                                </div>
+
+                                <div class="fw-bold text-success d-flex align-items-center gap-2">
+                                    <i class="bi bi-calendar-check"></i>
+                                    <span id="processingStartDisplay">Chưa bắt đầu</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">
+                                Ngày nghiệp vụ
+                            </label>
+                            <input type="date"
+                                   name="business_date"
+                                   value="{{ business_date|date:'Y-m-d' }}"
+                                   class="form-control">
+                            <div class="form-text">
+                                Sau 00:00 hệ thống tự tính cho ngày hôm trước. Có thể đổi nếu cần.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="employeeInfoBox"
+                         class="processing-employee-info d-none">
+
+                        <div class="processing-mini-info">
+                            <span>Mã NV</span>
+                            <strong id="infoEmployeeCode"></strong>
+                        </div>
+
+                        <div class="processing-mini-info">
+                            <span>Họ tên</span>
+                            <strong id="infoEmployeeName"></strong>
+                        </div>
+
+                        <div class="processing-mini-info">
+                            <span>Chức vụ</span>
+                            <strong id="infoEmployeePosition"></strong>
+                        </div>
+                    </div>
+
+                    <div class="processing-worktime-panel mt-3">
+
+                        <div class="processing-section-title mb-1">
+                            <i class="bi bi-clock-history me-2"></i>
+                            Thời gian làm việc tính lương
+                        </div>
+
+                        <div class="processing-section-sub mb-3">
+                            Nhập giờ làm theo ca. Hệ thống tự tính tổng giờ và giờ tăng ca nếu vượt 8 giờ.
+                        </div>
+
+                        <div class="row g-3">
+
+                            <div class="col-lg-3">
+                                <label class="form-label fw-semibold small">
+                                    Ca 1 - Bắt đầu
+                                </label>
+
+                                <input type="datetime-local"
+                                       class="form-control worktime-input"
+                                       name="shift1_start"
+                                       oninput="calculateWorkTime(this.closest('.processing-worktime-panel'))">
+                            </div>
+
+                            <div class="col-lg-3">
+                                <label class="form-label fw-semibold small">
+                                    Ca 1 - Kết thúc
+                                </label>
+
+                                <input type="datetime-local"
+                                       class="form-control worktime-input"
+                                       name="shift1_end"
+                                       oninput="calculateWorkTime(this.closest('.processing-worktime-panel'))">
+                            </div>
+
+                            <div class="col-lg-2">
+                                <label class="form-label fw-semibold small text-success">
+                                    Tổng ca 1
+                                </label>
+
+                                <input type="text"
+                                       class="form-control shift1-hours-display"
+                                       value="0 giờ"
+                                       readonly>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <label class="form-label fw-semibold small">
+                                    Ghi chú
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       name="work_note"
+                                       placeholder="Ghi chú ca làm việc">
+                            </div>
+
+                            <div class="col-lg-3">
+                                <label class="form-label fw-semibold small">
+                                    Ca 2 - Bắt đầu
+                                </label>
+
+                                <input type="datetime-local"
+                                       class="form-control worktime-input"
+                                       name="shift2_start"
+                                       oninput="calculateWorkTime(this.closest('.processing-worktime-panel'))">
+                            </div>
+
+                            <div class="col-lg-3">
+                                <label class="form-label fw-semibold small">
+                                    Ca 2 - Kết thúc
+                                </label>
+
+                                <input type="datetime-local"
+                                       class="form-control worktime-input"
+                                       name="shift2_end"
+                                       oninput="calculateWorkTime(this.closest('.processing-worktime-panel'))">
+                            </div>
+
+                            <div class="col-lg-2">
+                                <label class="form-label fw-semibold small text-success">
+                                    Tổng ca 2
+                                </label>
+
+                                <input type="text"
+                                       class="form-control shift2-hours-display"
+                                       value="0 giờ"
+                                       readonly>
+                            </div>
+
+                            <div class="col-lg-2">
+                                <label class="form-label fw-semibold small text-primary">
+                                    Tổng giờ
+                                </label>
+
+                                <input type="text"
+                                       class="form-control total-work-hours-display"
+                                       value="0 giờ"
+                                       readonly>
+                            </div>
+
+                            <div class="col-lg-2">
+                                <label class="form-label fw-semibold small text-danger">
+                                    Tăng ca
+                                </label>
+
+                                <input type="text"
+                                       class="form-control overtime-hours-display"
+                                       value="0 giờ"
+                                       readonly>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="productSection" class="d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="fw-bold text-success mb-1">
+                                <i class="bi bi-flower1 me-2"></i>
+                                Danh sách sản phẩm sơ chế
+                            </h6>
+                            <div class="small text-muted">
+                                Có thể thêm nhiều loại hoa/sản phẩm trong cùng một phiếu
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="productItems"></div>
+
+                    <button type="button"
+                            class="processing-fab-add"
+                            onclick="addProductItem()"
+                            title="Thêm sản phẩm">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="modal-footer bg-white rounded-bottom-4">
+                <button type="button"
+                        class="btn btn-light"
+                        data-bs-dismiss="modal">
+                    Đóng
+                </button>
+
+                <button type="submit"
+                        class="btn btn-success">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Hoàn thành
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="manualProcessingModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <form method="post"
+              action="{% url 'create_manual_processing_ticket' %}"
+              id="manualProcessingForm"
+              class="modal-content border-0 rounded-4">
+
+            {% csrf_token %}
+
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Nhập SC thủ công
+                    </h5>
+                    <div class="small opacity-75">
+                        Nhập nhanh dữ liệu sơ chế nhưng vẫn trừ kho nguyên liệu và cộng kho thành phẩm thật
+                    </div>
+                </div>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body bg-light">
+
+                <input type="hidden" name="employee_code" id="manualEmployeeCode">
+                <input type="hidden" name="employee_name" id="manualEmployeeName">
+                <input type="hidden" name="employee_position" id="manualEmployeePosition">
+                <input type="hidden" name="start_time" id="manualStartTime">
+                <input type="hidden" name="items_json" id="manualItemsJson">
+
+                <div class="processing-employee-panel mb-3">
+
+                    <div class="processing-employee-head">
+                        <div>
+                            <div class="processing-section-title">
+                                <i class="bi bi-person-badge me-2"></i>
+                                Nhân viên sơ chế
+                            </div>
+                            <div class="processing-section-sub">
+                                Chọn nhân viên để ghi nhận người nhập SC thủ công
+                            </div>
+                        </div>
+
+                        <div class="processing-time-pill">
+                            <i class="bi bi-clock-history"></i>
+                            <input type="text"
+                                   id="manualWorkingTimeDisplay"
+                                   value="Chưa bắt đầu"
+                                   readonly>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 align-items-end">
+                        <div class="col-lg-8">
+                            <label class="form-label fw-semibold">
+                                Nhân viên <span class="text-danger">*</span>
+                            </label>
+
+                            <select class="form-select processing-select"
+                                    id="manualEmployeeSelect"
+                                    required
+                                    onchange="handleManualEmployeeChange(this)">
+                                <option value="">Chọn nhân viên sơ chế</option>
+
+                                {% for employee in employees %}
+                                    <option value="{{ employee.ma_nv }}"
+                                            data-code="{{ employee.ma_nv }}"
+                                            data-name="{{ employee.ho_ten }}"
+                                            data-position="{{ employee.chuc_vu }}">
+                                        {{ employee.ma_nv }} - {{ employee.ho_ten }} - {{ employee.chuc_vu }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="processing-status-box processing-start-box">
+                                <div class="small text-muted">
+                                    Thời gian bắt đầu nhập
+                                </div>
+
+                                <div class="fw-bold text-success d-flex align-items-center gap-2">
+                                    <i class="bi bi-calendar-check"></i>
+                                    <span id="manualProcessingStartDisplay">Chưa bắt đầu</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">
+                                Ngày nghiệp vụ
+                            </label>
+                            <input type="date"
+                                   name="business_date"
+                                   value="{{ business_date|date:'Y-m-d' }}"
+                                   class="form-control">
+                            <div class="form-text">
+                                Sau 00:00 hệ thống tự tính cho ngày hôm trước. Có thể đổi nếu cần.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="manualEmployeeInfoBox"
+                         class="processing-employee-info d-none">
+
+                        <div class="processing-mini-info">
+                            <span>Mã NV</span>
+                            <strong id="manualInfoEmployeeCode"></strong>
+                        </div>
+
+                        <div class="processing-mini-info">
+                            <span>Họ tên</span>
+                            <strong id="manualInfoEmployeeName"></strong>
+                        </div>
+
+                        <div class="processing-mini-info">
+                            <span>Chức vụ</span>
+                            <strong id="manualInfoEmployeePosition"></strong>
+                        </div>
+                    </div>
+
+                    <div class="processing-worktime-panel mt-3">
+
+                        <div class="processing-section-title mb-1">
+                            <i class="bi bi-clock-history me-2"></i>
+                            Thời gian làm việc tính lương
+                        </div>
+
+                        <div class="processing-section-sub mb-3">
+                            Nhập giờ làm theo ca. Hệ thống tự tính tổng giờ và giờ tăng ca nếu vượt 8 giờ.
+                        </div>
+
+                        <div class="row g-3">
+
+                            <div class="col-lg-3">
+                                <label class="form-label fw-semibold small">
+                                    Ca 1 - Bắt đầu
+                                </label>
+
+                                <input type="datetime-local"
+                                       class="form-control worktime-input"
+                                       name="shift1_start"
+                                       oninput="calculateWorkTime(this.closest('.processing-worktime-panel'))">
+                            </div>
+
+                            <div class="col-lg-3">
+                                <label class="form-label fw-semibold small">
+                                    Ca 1 - Kết thúc
+                                </label>
+
+                                <input type="datetime-local"
+                                       class="form-control worktime-input"
+                                       name="shift1_end"
+                                       oninput="calculateWorkTime(this.closest('.processing-worktime-panel'))">
+                            </div>
+
+                            <div class="col-lg-2">
+                                <label class="form-label fw-semibold small text-success">
+                                    Tổng ca 1
+                                </label>
+
+                                <input type="text"
+                                       class="form-control shift1-hours-display"
+                                       value="0 giờ"
+                                       readonly>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <label class="form-label fw-semibold small">
+                                    Ghi chú
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       name="work_note"
+                                       placeholder="Ghi chú ca làm việc">
+                            </div>
+
+                            <div class="col-lg-3">
+                                <label class="form-label fw-semibold small">
+                                    Ca 2 - Bắt đầu
+                                </label>
+
+                                <input type="datetime-local"
+                                       class="form-control worktime-input"
+                                       name="shift2_start"
+                                       oninput="calculateWorkTime(this.closest('.processing-worktime-panel'))">
+                            </div>
+
+                            <div class="col-lg-3">
+                                <label class="form-label fw-semibold small">
+                                    Ca 2 - Kết thúc
+                                </label>
+
+                                <input type="datetime-local"
+                                       class="form-control worktime-input"
+                                       name="shift2_end"
+                                       oninput="calculateWorkTime(this.closest('.processing-worktime-panel'))">
+                            </div>
+
+                            <div class="col-lg-2">
+                                <label class="form-label fw-semibold small text-success">
+                                    Tổng ca 2
+                                </label>
+
+                                <input type="text"
+                                       class="form-control shift2-hours-display"
+                                       value="0 giờ"
+                                       readonly>
+                            </div>
+
+                            <div class="col-lg-2">
+                                <label class="form-label fw-semibold small text-primary">
+                                    Tổng giờ
+                                </label>
+
+                                <input type="text"
+                                       class="form-control total-work-hours-display"
+                                       value="0 giờ"
+                                       readonly>
+                            </div>
+
+                            <div class="col-lg-2">
+                                <label class="form-label fw-semibold small text-danger">
+                                    Tăng ca
+                                </label>
+
+                                <input type="text"
+                                       class="form-control overtime-hours-display"
+                                       value="0 giờ"
+                                       readonly>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="manualProductSection" class="d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="fw-bold text-success mb-1">
+                                <i class="bi bi-flower1 me-2"></i>
+                                Danh sách sản phẩm SC thủ công
+                            </h6>
+                            <div class="small text-muted">
+                                Dữ liệu lấy từ kho nguyên liệu thật, khi lưu sẽ trừ RAW và cộng FINISHED
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="manualProductItems"></div>
+
+                    <button type="button"
+                            class="processing-fab-add"
+                            onclick="addManualProductItem()"
+                            title="Thêm sản phẩm">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="modal-footer bg-white rounded-bottom-4">
+                <button type="button"
+                        class="btn btn-light"
+                        data-bs-dismiss="modal">
+                    Đóng
+                </button>
+
+                <button type="submit"
+                        class="btn btn-success">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Hoàn thành nhập SC thủ công
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="looseStemMergeModal" tabindex="-1" style="z-index: 1060;">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 rounded-4 glass-modal-content">
+
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title fw-bold" id="looseStemModalTitle">
+                        <i class="bi bi-patch-plus me-2"></i>
+                        Ghép cành lẻ
+                    </h5>
+                    <div class="small text-muted">
+                        Chọn cành lẻ cùng mã hoa từ nhà cung cấp khác để ghép đủ bó
+                    </div>
+                </div>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body bg-light">
+
+                <div class="alert alert-success border-0 rounded-4 mb-3">
+                    Hệ thống phát hiện cành lẻ chưa đủ quy cách bó.
+                    Bạn có thể chọn cành lẻ cùng mã hoa từ nhà cung cấp khác để ghép thành bó hoàn chỉnh.
+                </div>
+
+                <div class="receipt-list">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Mã lô gốc</th>
+                                    <th>Nhà cung cấp</th>
+                                    <th>NV sơ chế</th>
+                                    <th class="text-end">Tồn cành lẻ</th>
+                                    <th class="text-center" style="width:160px;">Số cành ghép</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="looseStemStockTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer bg-white rounded-bottom-4">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                    Hủy
+                </button>
+
+                <button type="button" class="btn btn-success" onclick="applyLooseStemMerge()">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Xác nhận ghép cành
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    window.RAW_PRODUCTS_OPTIONS_HTML = `
+        {% for product in raw_products %}
+            <option value="{{ product.id }}"
+                    data-code="{{ product.product_code }}"
+                    data-name="{{ product.product_name }}"
+                    data-stock="{{ product.quantity|default:0 }}"
+                    data-unit="{{ product.unit|default:'' }}"
+                    data-grade="{{ product.flower_grade|default:'' }}"
+                    data-group="{{ product.product_group|default:'' }}"
+                    data-import-date="{% if product.received_date %}{{ product.received_date|date:'Y-m-d' }}{% endif %}"
+                    data-supplier-code="{{ product.supplier_code|default:'' }}"
+                    data-supplier="{{ product.supplier_name|default:'' }}">
+                {{ product.product_code }} / {{ product.product_name }} - [{{ product.supplier_name }}] - tồn {{ product.quantity }} {{ product.unit }}
+            </option>
+        {% endfor %}
+    `;
+    function getProductFormHtml(index) {
+        return `
+            <div class="processing-item-row border rounded-4 p-3 bg-white mb-3 shadow-smposition-relative" data-index="${index}">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3 btn-sm text-danger" onclick="removeProductRow(this)" title="Xóa dòng"></button>
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label fw-semibold small">Tên hoa / sản phẩm</label>
+                        <select class="form-select product-select form-select-sm" onchange="selectProduct(this)">
+                            <option value="">Chọn sản phẩm từ kho nguyên liệu</option>
+                            {% for product in raw_products %}
+                            <option value="{{ product.id }}"
+                                    data-code="{{ product.product_code }}"
+                                    data-name="{{ product.product_name }}"
+                                    data-stock="{{ product.quantity|default:0 }}"
+                                    data-unit="{{ product.unit|default:'' }}"
+                                    data-grade="{{ product.flower_grade|default:'' }}"
+                                    data-group="{{ product.product_group|default:'' }}"
+                                    data-import-date="{% if product.received_date %}{{ product.received_date|date:'Y-m-d' }}{% endif %}"
+                                    data-supplier-code="{{ product.supplier_code|default:'' }}"
+                                    data-supplier="{{ product.supplier_name|default:'' }}">
+                                ${'{{ product.product_code }}'} / ${'{{ product.product_name }}'} - [${'{{ product.supplier_name }}'}] - tồn ${'{{ product.quantity }}'} ${'{{ product.unit }}'}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold small">Tồn kho nguyên liệu</label>
+                        <input type="number" class="form-control form-control-sm stock-quantity" readonly>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold small">Ngày nhập gốc</label>
+                        <input type="text" class="form-control form-control-sm import-date" readonly>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold small">Thời gian ngâm (ngày)</label>
+                        <input type="text" class="form-control form-control-sm soaking-days" readonly>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold small">Nhà cung cấp hiện tại</label>
+                        <input type="text" class="form-control form-control-sm supplier-name" readonly>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold small text-primary">Số lượng nhận *</label>
+                        <input type="number" class="form-control form-control-sm received-quantity" min="0" onblur="openBunchAfterReceived(this)">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold small">Quy cách đóng gói</label>
+                        <input type="text" class="form-control form-control-sm bunch-type" readonly placeholder="Chưa chọn">
+                        <input type="hidden" class="stems-per-bunch">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold small text-primary">Số cành thực tế sơ chế *</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" class="form-control processed-stems" min="0" onblur="handleProcessedStemsBlur(this)">
+                            <button class="btn btn-outline-warning btn-trigger-merge d-none" type="button" onclick="triggerOpenLooseStemModal(this)">
+                                <i class="bi bi-patch-plus"></i> Ghép cành lẻ
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold small text-danger">Số cành xả/hủy</label>
+                        <input type="number" class="form-control form-control-sm damaged-stems" value="0" readonly>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold small text-warning">Cành lẻ tự tính</label>
+                        <input type="number" class="form-control form-control-sm odd-stems" value="0" readonly>
+                    </div>
+
+                        <div class="col-md-2 d-none">
+                            <label class="form-label fw-semibold small">Số cành thừa</label>
+                            <input type="number" class="form-control form-control-sm extra-stems" value="0" readonly>
+                        </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold small text-success">Tổng cành thành phẩm</label>
+                        <input type="number" class="form-control form-control-sm final-stems" value="0" readonly>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold small text-success">Số bó thành phẩm nhập kho</label>
+                        <input type="number" class="form-control form-control-sm final-bunches" value="0" readonly>
+                    </div>
+                </div>
+
+                <input type="hidden" class="merge-sources-json" value="[]">
+                <div class="merge-sources-container d-none">
+                    <div class="merge-sources-wrapper small">
+                        <div class="fw-bold text-success mb-1"><i class="bi bi-link-45deg"></i> Danh sách nguồn cành lẻ góp bù vào dòng này:</div>
+                        <ul class="list-unstyled mb-0 merge-sources-list"></ul>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/apps/processing.js' %}"></script>
+
+<script>
+function cleanProcessingModalBackdrop() {
+    document.querySelectorAll(".modal-backdrop").forEach(function (backdrop) {
+        backdrop.remove();
+    });
+
+    document.body.classList.remove("modal-open");
+    document.body.style.removeProperty("overflow");
+    document.body.style.removeProperty("padding-right");
+}
+
+function openProcessingTicketDetailModal(modalId) {
+    cleanProcessingModalBackdrop();
+
+    const modalEl = document.getElementById(modalId);
+
+    if (!modalEl) {
+        return;
+    }
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl, {
+        backdrop: false,
+        keyboard: true
+    });
+
+    modal.show();
+
+    setTimeout(function () {
+        cleanProcessingModalBackdrop();
+        modalEl.style.zIndex = "3000";
+    }, 80);
+}
+
+document.addEventListener("hidden.bs.modal", function () {
+    cleanProcessingModalBackdrop();
+});
+
+document.addEventListener("click", function (event) {
+    if (event.target.closest(".processing-ticket-detail-modal [data-bs-dismiss='modal']")) {
+        setTimeout(cleanProcessingModalBackdrop, 120);
+    }
+});
+</script>
+{% endblock %}

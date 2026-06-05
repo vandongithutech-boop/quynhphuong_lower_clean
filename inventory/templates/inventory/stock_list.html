@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+<div class="page-card">
+
+    <div class="page-card-header">
+        <div>
+            <h4 class="mb-1">{{ page_title }}</h4>
+            <p class="text-muted mb-0">{{ page_desc }}</p>
+        </div>
+
+        <form method="get" class="d-flex gap-2">
+            <input type="text"
+                   name="q"
+                   value="{{ q }}"
+                   class="form-control"
+                   placeholder="Tìm mã hoặc tên sản phẩm...">
+
+            <button class="btn btn-success">
+                <i class="bi bi-search"></i>
+                Tìm
+            </button>
+        </form>
+    </div>
+
+    <div class="page-card-body">
+        <div class="data-list">
+
+            {% for item in stocks %}
+                <div class="data-item">
+
+                    <div>
+                        <div class="item-title">
+                            {{ item.product_code }} - {{ item.product_name }}
+                        </div>
+
+                        <div class="item-sub">
+                            {{ item.get_product_group_display }}
+                        </div>
+
+                        {% if item.lot %}
+                            <div class="item-sub">
+                                Mã lô: <strong>{{ item.lot.lot_code }}</strong>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <div class="info-label">Kho hiện tại</div>
+                        <div class="info-value">
+                            {{ item.get_warehouse_type_display }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="info-label">NCC</div>
+                        <div class="info-value">
+                            {{ item.supplier_name|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="info-label">ĐVT / Độ hoa</div>
+                        <div class="info-value">
+                            {{ item.unit|default:"-" }} /
+                            {{ item.flower_grade|default:"chưa có dữ liệu" }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="info-label">Số lượng tồn</div>
+                        <div class="status-pill">
+                            {{ item.quantity|floatformat:0 }}
+                        </div>
+                    </div>
+
+                    {% if item.latest_stock_out %}
+                        <div>
+                            <div class="info-label">Lý do</div>
+                            <div class="info-value">
+                                {{ item.latest_stock_out.reason|default:"-" }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="info-label">Nhân viên</div>
+                            <div class="info-value">
+                                {{ item.latest_stock_out.stock_out.employee_name|default:"-" }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="info-label">Ngày xuất</div>
+                            <div class="info-value">
+                                {{ item.latest_stock_out.created_at|date:"d/m/Y H:i" }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if item.lot %}
+                        <div>
+                            <a href="{% url 'traceability:trace_lot_detail' item.lot.lot_code %}"
+                               target="_blank"
+                               class="btn btn-sm btn-outline-success">
+                                Truy xuất QR
+                            </a>
+                        </div>
+                    {% endif %}
+
+                </div>
+            {% empty %}
+                <div class="empty-state">
+                    Chưa có dữ liệu trong kho này
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

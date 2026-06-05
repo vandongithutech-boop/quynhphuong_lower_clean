@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Báo cáo tồn kho{% endblock %}
+{% block page_title %}Báo cáo tồn kho hiện tại{% endblock %}
+{% block page_subtitle %}Tồn kho hiện tại theo từng sản phẩm và từng kho{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/report.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="report-page">
+
+    <div class="report-header-card report-header-compact">
+        <div>
+            <h4>Báo cáo tồn kho hiện tại</h4>
+            <p>Tổng tồn hiện tại theo từng sản phẩm và từng kho.</p>
+            <input type="date"
+                name="from_date"
+                value="{{ from_date|date:'Y-m-d' }}"
+                class="form-control">
+
+            <input type="date"
+                name="to_date"
+                value="{{ to_date|date:'Y-m-d' }}"
+                class="form-control">
+            <form method="get" class="report-filter report-filter-inline">
+                <input type="text"
+                       name="q"
+                       value="{{ q }}"
+                       class="form-control"
+                       placeholder="Tìm mã / tên sản phẩm...">
+
+                <select name="warehouse" class="form-select">
+                    <option value="">Tất cả kho</option>
+                    {% for value, label in warehouse_choices %}
+                        <option value="{{ value }}" {% if warehouse == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <select name="group" class="form-select">
+                    <option value="">Tất cả nhóm</option>
+                    {% for value, label in product_group_choices %}
+                        <option value="{{ value }}" {% if group == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <button class="btn btn-success">
+                    <i class="bi bi-search"></i>
+                    Lọc
+                </button>
+            </form>
+        </div>
+
+        <div class="report-chart-box">
+            <div class="report-panel-title">
+                <i class="bi bi-graph-up-arrow"></i>
+                So sánh nhập hoa hôm qua / hôm nay
+            </div>
+
+            <canvas id="inventoryInChart" height="120"></canvas>
+
+            <div class="report-chart-legend">
+                <span><i class="legend-dot orange"></i> Hôm qua</span>
+                <span><i class="legend-dot green"></i> Hôm nay</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="report-summary-grid">
+        <div class="report-stat-card">
+            <span>Tồn đầu kỳ</span>
+            <strong>{{ total_opening_qty|floatformat:0 }}</strong>
+            <small>Tồn trước ngày lọc</small>
+        </div>
+
+        <div class="report-stat-card">
+            <span>Nhập trong kỳ</span>
+            <strong>{{ total_in_qty|floatformat:0 }}</strong>
+            <small>Bao gồm nhập và kiểm kê tăng</small>
+        </div>
+
+        <div class="report-stat-card">
+            <span>Xuất trong kỳ</span>
+            <strong>{{ total_out_qty|floatformat:0 }}</strong>
+            <small>Bao gồm xuất và kiểm kê giảm</small>
+        </div>
+
+        <div class="report-stat-card">
+            <span>Tồn cuối kỳ</span>
+            <strong>{{ total_closing_qty|floatformat:0 }}</strong>
+            <small>Theo ngày đã chọn</small>
+        </div>
+    </div>
+
+        <div class="report-table-header">
+            <div>
+                <h5>Bảng tồn kho chi tiết theo sản phẩm</h5>
+                <p>
+                    Dữ liệu theo ngày nghiệp vụ, gồm tồn đầu kỳ, nhập, xuất, kiểm kê và tồn cuối kỳ.
+                </p>
+            </div>
+
+            <a href="{% url 'reports:export_inventory_report_excel' %}?from_date={{ from_date|date:'Y-m-d' }}&to_date={{ to_date|date:'Y-m-d' }}&q={{ q }}&warehouse={{ warehouse }}&group={{ group }}"
+            class="btn btn-outline-success">
+                <i class="bi bi-file-earmark-excel"></i>
+                Tải Excel
+            </a>
+        </div>
+
+        <div class="report-table-wrap">
+            <table class="report-excel-table">
+                <thead>
+                    <tr>
+                        <th class="sticky-col">Mã SP</th>
+                        <th class="sticky-col-2">Tên sản phẩm</th>
+                        <th>Nhóm</th>
+                        <th>Kho</th>
+                        <th>Loại</th>
+                        <th>ĐVT</th>
+                        <th>Tồn đầu</th>
+                        <th>Nhập</th>
+                        <th>Xuất</th>
+                        <th>Kiểm kê</th>
+                        <th>Tồn cuối</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for row in report_rows %}
+                    <tr>
+                        <td class="sticky-col code-cell">{{ row.product_code }}</td>
+                        <td class="sticky-col-2 name-cell">{{ row.product_name }}</td>
+                        <td>{{ row.product_group }}</td>
+                        <td>{{ row.warehouse_label }}</td>
+                        <td>{{ row.flower_grade }}</td>
+                        <td>{{ row.unit }}</td>
+
+                        <td class="num-cell">{{ row.opening_qty|floatformat:0 }}</td>
+                        <td class="num-cell text-success">{{ row.in_qty|floatformat:0 }}</td>
+                        <td class="num-cell text-danger">{{ row.out_qty|floatformat:0 }}</td>
+                        <td class="num-cell">{{ row.check_qty|floatformat:0 }}</td>
+                        <td class="num-cell total-cell">{{ row.closing_qty|floatformat:0 }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="11" class="empty-report">
+                            Không có dữ liệu tồn kho trong khoảng ngày đã chọn
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const chartLabels = {{ chart_labels|safe }};
+const chartToday = {{ chart_today|safe }};
+const chartYesterday = {{ chart_yesterday|safe }};
+
+const ctx = document.getElementById("inventoryInChart");
+
+if (ctx) {
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: chartLabels,
+            datasets: [
+                {
+                    label: "Hôm qua",
+                    data: chartYesterday,
+                    borderColor: "#f97316",
+                    backgroundColor: "rgba(249, 115, 22, .08)",
+                    tension: .35,
+                    fill: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: "Hôm nay",
+                    data: chartToday,
+                    borderColor: "#16a34a",
+                    backgroundColor: "rgba(22, 163, 74, .08)",
+                    tension: .35,
+                    fill: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        maxRotation: 25,
+                        minRotation: 0
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

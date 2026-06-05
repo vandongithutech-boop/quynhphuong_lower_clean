@@ -1,0 +1,549 @@
+/* =========================================================
+   GLOBAL BUTTON
+========================================================= */
+
+.btn {
+    position: relative;
+    overflow: hidden;
+
+    border: 1px solid transparent;
+    border-radius: 18px;
+
+    padding: 10px 18px;
+
+    font-size: 14px;
+    font-weight: 850;
+    letter-spacing: -.01em;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        background .18s ease,
+        color .18s ease,
+        border-color .18s ease;
+
+    backdrop-filter: blur(18px) saturate(170%);
+    -webkit-backdrop-filter: blur(18px) saturate(170%);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: scale(.98);
+}
+
+.btn i {
+    font-size: 15px;
+}
+
+/* =========================================================
+   SUCCESS BUTTON
+========================================================= */
+
+.btn-success {
+    color: #ffffff !important;
+
+    background:
+        linear-gradient(135deg, #22c55e, #15803d);
+
+    border-color: rgba(255,255,255,.18);
+
+    box-shadow:
+        0 14px 28px rgba(22,163,74,.24),
+        inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+.btn-success:hover {
+    filter: brightness(.98);
+
+    box-shadow:
+        0 18px 36px rgba(22,163,74,.30),
+        inset 0 1px 0 rgba(255,255,255,.22);
+}
+
+/* =========================================================
+   PRIMARY BUTTON
+========================================================= */
+
+.btn-primary {
+    color: #ffffff !important;
+
+    background:
+        linear-gradient(135deg, #3b82f6, #2563eb);
+
+    border-color: rgba(255,255,255,.18);
+
+    box-shadow:
+        0 14px 28px rgba(37,99,235,.24),
+        inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+.btn-primary:hover {
+    box-shadow:
+        0 18px 36px rgba(37,99,235,.30),
+        inset 0 1px 0 rgba(255,255,255,.22);
+}
+
+/* =========================================================
+   LIGHT BUTTON
+========================================================= */
+
+.btn-light,
+.btn-outline-secondary {
+    color: #334155 !important;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.82), rgba(248,250,252,.62));
+
+    border: 1px solid rgba(226,232,240,.95);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.92),
+        0 10px 24px rgba(15,23,42,.06);
+}
+
+.btn-light:hover,
+.btn-outline-secondary:hover {
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.96), rgba(248,250,252,.84));
+
+    color: #0f172a !important;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.95),
+        0 14px 32px rgba(15,23,42,.10);
+}
+
+/* =========================================================
+   DANGER BUTTON
+========================================================= */
+
+.btn-danger,
+.btn-outline-danger {
+    color: #b91c1c !important;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.86), rgba(254,242,242,.72));
+
+    border: 1px solid rgba(252,165,165,.8);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.92),
+        0 10px 24px rgba(220,38,38,.08);
+}
+
+.btn-danger:hover,
+.btn-outline-danger:hover {
+    background:
+        linear-gradient(135deg, #ef4444, #dc2626);
+
+    color: #ffffff !important;
+
+    box-shadow:
+        0 18px 36px rgba(220,38,38,.24);
+}
+
+/* =========================================================
+   WARNING BUTTON
+========================================================= */
+
+.btn-warning {
+    color: #92400e !important;
+
+    background:
+        linear-gradient(180deg, rgba(255,251,235,.95), rgba(254,243,199,.82));
+
+    border: 1px solid rgba(253,224,71,.92);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.92),
+        0 10px 24px rgba(245,158,11,.10);
+}
+
+.btn-warning:hover {
+    background:
+        linear-gradient(135deg, #facc15, #f59e0b);
+
+    color: #ffffff !important;
+}
+
+/* =========================================================
+   INFO BUTTON
+========================================================= */
+
+.btn-info {
+    color: #0c4a6e !important;
+
+    background:
+        linear-gradient(180deg, rgba(240,249,255,.96), rgba(224,242,254,.84));
+
+    border: 1px solid rgba(125,211,252,.9);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.92),
+        0 10px 24px rgba(14,165,233,.10);
+}
+
+/* =========================================================
+   SMALL BUTTON
+========================================================= */
+
+.btn-sm {
+    padding: 8px 14px;
+    font-size: 12px;
+    border-radius: 15px;
+}
+
+/* =========================================================
+   LARGE BUTTON
+========================================================= */
+
+.btn-lg {
+    padding: 14px 24px;
+    font-size: 15px;
+    border-radius: 22px;
+}
+
+/* =========================================================
+   ICON BUTTON
+========================================================= */
+
+.btn-icon {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+
+    border-radius: 16px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon i {
+    margin: 0;
+    font-size: 16px;
+}
+
+/* =========================================================
+   APPLE CAPSULE BUTTON
+========================================================= */
+
+.btn-capsule {
+    border-radius: 999px;
+    padding-inline: 20px;
+}
+
+/* =========================================================
+   SOFT GLASS BUTTON
+========================================================= */
+
+.btn-glass {
+    color: #0f172a !important;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.62), rgba(255,255,255,.36));
+
+    border: 1px solid rgba(255,255,255,.68);
+
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.88),
+        0 12px 28px rgba(15,23,42,.08);
+}
+
+.btn-glass:hover {
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.54));
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.92),
+        0 16px 34px rgba(15,23,42,.12);
+}
+
+/* =========================================================
+   DISABLED
+========================================================= */
+
+.btn:disabled,
+.btn.disabled {
+    opacity: .58;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* =========================================================
+   BUTTON GROUP
+========================================================= */
+
+.btn-group-glass {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* =========================================================
+   APP CUSTOM BUTTONS - LIQUID GLASS
+========================================================= */
+
+/* ===== RECEIVE ===== */
+
+.receive-btn {
+    border: none;
+    border-radius: 18px;
+
+    padding: 10px 16px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 13px;
+    font-weight: 900;
+
+    color: #ffffff;
+    text-decoration: none;
+
+    background:
+        linear-gradient(135deg, #22c55e, #15803d);
+
+    box-shadow:
+        0 16px 32px rgba(22,163,74,.24),
+        inset 0 1px 0 rgba(255,255,255,.18);
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+.receive-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 22px 42px rgba(22,163,74,.32),
+        inset 0 1px 0 rgba(255,255,255,.22);
+}
+
+/* ===== PRODUCTION ===== */
+
+.production-btn {
+    border: 1px solid rgba(255,255,255,.68);
+    border-radius: 18px;
+
+    padding: 10px 16px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 13px;
+    font-weight: 900;
+
+    text-decoration: none;
+
+    backdrop-filter: blur(18px) saturate(170%);
+    -webkit-backdrop-filter: blur(18px) saturate(170%);
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+.production-btn:hover {
+    transform: translateY(-2px);
+}
+
+.production-btn.start {
+    color: #0369a1;
+
+    background:
+        linear-gradient(180deg, rgba(240,249,255,.96), rgba(224,242,254,.82));
+
+    border-color: rgba(125,211,252,.88);
+
+    box-shadow:
+        0 12px 28px rgba(14,165,233,.12);
+}
+
+.production-btn.packing {
+    color: #92400e;
+
+    background:
+        linear-gradient(180deg, rgba(255,251,235,.96), rgba(254,243,199,.82));
+
+    border-color: rgba(253,224,71,.92);
+
+    box-shadow:
+        0 12px 28px rgba(245,158,11,.12);
+}
+
+.production-btn.complete {
+    color: #166534;
+
+    background:
+        linear-gradient(180deg, rgba(240,253,244,.96), rgba(220,252,231,.82));
+
+    border-color: rgba(134,239,172,.92);
+
+    box-shadow:
+        0 12px 28px rgba(22,163,74,.12);
+}
+
+.production-btn.cancel {
+    color: #991b1b;
+
+    background:
+        linear-gradient(180deg, rgba(254,242,242,.96), rgba(254,226,226,.82));
+
+    border-color: rgba(252,165,165,.92);
+
+    box-shadow:
+        0 12px 28px rgba(220,38,38,.10);
+}
+
+/* ===== PKL ===== */
+
+.pkl-back-btn,
+.pkl-print-btn,
+.print-label-btn,
+.back-btn {
+    border: 1px solid rgba(255,255,255,.68);
+    border-radius: 18px;
+
+    padding: 10px 16px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: 900;
+
+    backdrop-filter: blur(18px) saturate(170%);
+    -webkit-backdrop-filter: blur(18px) saturate(170%);
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+.pkl-back-btn,
+.back-btn {
+    color: #334155;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,250,252,.68));
+
+    border-color: rgba(226,232,240,.92);
+
+    box-shadow:
+        0 12px 26px rgba(15,23,42,.06);
+}
+
+.pkl-print-btn,
+.print-label-btn {
+    color: #ffffff;
+
+    background:
+        linear-gradient(135deg, #22c55e, #15803d);
+
+    box-shadow:
+        0 14px 30px rgba(22,163,74,.22);
+}
+
+.pkl-back-btn:hover,
+.back-btn:hover,
+.pkl-print-btn:hover,
+.print-label-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* ===== ICON ACTION ===== */
+
+.action-icon-btn,
+.finished-detail-btn {
+    width: 40px;
+    height: 40px;
+
+    border: 1px solid rgba(255,255,255,.72);
+    border-radius: 16px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.82), rgba(248,250,252,.64));
+
+    color: #334155;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.88),
+        0 10px 22px rgba(15,23,42,.08);
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
+}
+
+.action-icon-btn:hover,
+.finished-detail-btn:hover {
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(135deg, #22c55e, #15803d);
+
+    color: #ffffff;
+
+    box-shadow:
+        0 16px 32px rgba(22,163,74,.22);
+}
+
+/* ===== VOICE ===== */
+
+.voice-toggle-btn {
+    border: 1px solid rgba(255,255,255,.72);
+    border-radius: 18px;
+
+    padding: 11px 18px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 13px;
+    font-weight: 900;
+
+    color: #166534;
+
+    background:
+        linear-gradient(180deg, rgba(240,253,244,.92), rgba(220,252,231,.72));
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.88),
+        0 12px 28px rgba(22,163,74,.12);
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+.voice-toggle-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 18px 38px rgba(22,163,74,.20);
+}

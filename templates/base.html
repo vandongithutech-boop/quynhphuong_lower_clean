@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}QUỲNH PHƯƠNG LOWER{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/core/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/core/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/core/topbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/core/cards.css' %}">
+    <link rel="stylesheet" href="{% static 'css/core/forms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/core/tables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/core/buttons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/core/data-list.css' %}">
+    <link rel="stylesheet" href="{% static 'css/core/summary.css' %}">
+    <link rel="stylesheet" href="{% static 'css/core/receipt.css' %}">
+    <link rel="stylesheet" href="{% static 'css/core/popup.css' %}">
+    <link rel="stylesheet" href="{% static 'css/core/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'css/core/modal.css' %}">
+    
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+{% include 'components/sidebar.html' %}
+
+<main class="app-content">
+
+    <header class="topbar">
+        <div>
+            <h1 class="page-heading">
+                {% block page_title %}Trang chủ{% endblock %}
+            </h1>
+
+            <div class="page-desc">
+                {% block page_subtitle %}Hệ thống quản lý xuất khẩu hoa{% endblock %}
+            </div>
+        </div>
+
+        {% include 'components/user_box.html' %}
+    </header>
+
+    <section class="main-content">
+        {% block content %}
+        {% endblock %}
+    </section>
+
+</main>
+
+{% include 'components/popup.html' %}
+
+<div class="modal fade" id="globalPurchaseAlertModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-4 border-0">
+
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title fw-bold text-danger">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Cảnh báo vượt số lượng đặt mua
+                    </h5>
+
+                    <div class="text-muted small">
+                        Có sản phẩm tài xế nhận cao hơn số lượng đã đặt. Vui lòng xử lý ngay.
+                    </div>
+                </div>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" id="globalPurchaseAlertBody"></div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="driverAlertResultModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title fw-bold text-success">
+                        <i class="bi bi-bell"></i>
+                        Phản hồi số lượng từ kế toán / kinh doanh
+                    </h5>
+
+                    <div class="text-muted small">
+                        Có phản hồi mới về số lượng vượt mức bạn đã báo.
+                    </div>
+                </div>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" id="driverAlertResultBody"></div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/core/popup.js' %}"></script>
+<script src="{% static 'js/apps/popup.js' %}"></script>
+<script src="{% static 'js/apps/custom-select.js' %}"></script>
+
+<script src="{% static 'js/apps/global_purchase_alerts.js' %}"></script>
+<script src="{% static 'js/apps/driver_alert_results.js' %}"></script>
+
+{% block extra_js %}
+{% endblock %}
+
+</body>
+</html>

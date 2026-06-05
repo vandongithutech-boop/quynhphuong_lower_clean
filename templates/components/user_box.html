@@ -1,0 +1,22 @@
+<div class="user-box">
+    {% if user.is_authenticated %}
+        <div class="user-avatar">
+            {{ user.username|first|upper }}
+        </div>
+
+        <div class="d-none d-md-block">
+            <div class="user-greeting">Xin chào</div>
+            <strong>{{ user.username }}</strong>
+        </div>
+
+        <a href="{% url 'accounts:logout' %}" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-box-arrow-right"></i>
+            Đăng xuất
+        </a>
+    {% else %}
+        <a href="{% url 'accounts:login' %}" class="btn btn-success btn-sm">
+            <i class="bi bi-box-arrow-in-right"></i>
+            Đăng nhập
+        </a>
+    {% endif %}
+</div>

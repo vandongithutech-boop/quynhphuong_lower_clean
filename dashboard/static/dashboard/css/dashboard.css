@@ -1,0 +1,172 @@
+.dashboard-wrapper {
+    padding-bottom: 30px;
+}
+
+.dashboard-card {
+    background: #fff;
+    border-radius: 22px;
+    border: none;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+}
+
+.stat-card {
+    padding: 20px;
+    min-height: 130px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-label {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 30px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.stat-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    position: absolute;
+    right: 18px;
+    top: 18px;
+}
+
+.bg-soft-green {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.bg-soft-blue {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.bg-soft-yellow {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.bg-soft-red {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.alert-row {
+    display: flex;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.alert-row:last-child {
+    border-bottom: none;
+}
+
+.alert-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    margin-top: 6px;
+}
+
+.alert-content strong {
+    display: block;
+    font-size: 14px;
+}
+
+.alert-content span {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.order-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.order-row:last-child {
+    border-bottom: none;
+}
+
+.order-code {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.order-sub {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.status-pill {
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.activity-row {
+    display: flex;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.activity-row:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: #ecfdf5;
+    color: #059669;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.activity-title {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 14px;
+}
+
+.activity-desc {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.customer-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.customer-row:last-child {
+    border-bottom: none;
+}

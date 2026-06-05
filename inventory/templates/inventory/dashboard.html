@@ -1,0 +1,1147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kho tổng{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/transport.css' %}">
+<link rel="stylesheet" href="{% static 'css/apps/inventory.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-card">
+
+    <div class="page-card-header d-flex justify-content-between align-items-center">
+
+        <div>
+            <h4 class="mb-1">Kho Tổng</h4>
+            <p class="text-muted mb-0">
+                Tổng hợp toàn bộ kho hoa, kho sale và vật tư
+            </p>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#stockInModal">
+                <i class="bi bi-box-arrow-in-down"></i>
+                Nhập Kho
+            </button>
+
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#stockOutModal">
+                <i class="bi bi-box-arrow-up"></i>
+                Xuất Kho
+            </button>
+
+            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#quickInventoryCheckModal">
+                <i class="bi bi-clipboard-check"></i>
+                Kiểm Kê
+            </button>
+        </div>
+
+    </div>
+
+    <div class="page-card-body">
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-2">
+                <div class="summary-card">
+                    <div class="summary-title">Kho hoa hồng</div>
+                    <div class="summary-value">{{ rose_total|floatformat:0 }}</div>
+                    <div class="summary-note">Tổng số lượng hoa hồng tồn kho</div>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="summary-card">
+                    <div class="summary-title">Hoa/lá phụ</div>
+                    <div class="summary-value">{{ rose_total|floatformat:0 }}</div>
+                    <div class="summary-note">Tổng số lượng hoa/lá phụ tồn kho</div>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="summary-card">
+                    <div class="summary-title">Kho Sale</div>
+                    <div class="summary-value">{{ material_total|floatformat:0 }}</div>
+                    <div class="summary-note">Hàng sale đang giữ</div>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="summary-card">
+                    <div class="summary-title">Kho vật tư</div>
+                    <div class="summary-value">0</div>
+                    <div class="summary-note">Thùng, đá gel, phụ liệu</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+
+        <div class="mb-4">
+
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1">
+                        <i class="bi bi-truck text-success me-2"></i>
+                        Đơn vận chuyển chờ nhập kho
+                    </h5>
+                    <div class="text-muted small">
+                        Các đơn tài xế đã hoàn thành và đang chờ kho kiểm đếm
+                    </div>
+                </div>
+            </div>
+            <div class="mb-4">
+
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <h5 class="fw-bold mb-1">
+                            <i class="bi bi-qr-code text-success me-2"></i>
+                            Phiếu đã tạo QR bó - chờ dán tem
+                        </h5>
+                        <div class="text-muted small">
+                            In QR, dán tem lên từng bó hoa rồi xác nhận nhập kho
+                        </div>
+                    </div>
+                </div>
+
+                <div class="transport-po-list">
+
+                    {% for receipt in label_created_receipts %}
+                        <div class="transport-po-card" data-po-id="{{ po.id }}">
+
+                            <div class="transport-po-header inventory-po-header">
+
+                                <div>
+                                    <div class="transport-supplier-name">
+                                        {{ receipt.supplier_name|default:"Chưa có NCC" }}
+                                    </div>
+
+                                    <div class="transport-po-code">
+                                        {{ receipt.receipt_code }}
+                                    </div>
+                                </div>
+
+                                <div class="inventory-approval-step">
+                                    <div class="info-label">Đơn liên quan</div>
+                                    <div class="info-value">
+                                        {{ receipt.source_po_code|default:"-" }}
+                                    </div>
+                                </div>
+
+                                <div class="inventory-approval-step">
+                                    <div class="info-label">Trạng thái</div>
+                                    <div class="status-pill">
+                                        Chờ dán tem
+                                    </div>
+                                </div>
+
+                                <div class="transport-po-actions text-center">
+                                    <a href="#"
+                                    class="btn btn-outline-success btn-sm">
+                                        <i class="bi bi-printer"></i>
+                                        In tem QR
+                                    </a>
+                                </div>
+
+                            </div>
+
+                            <div class="transport-po-items mt-3">
+                                <div class="table-responsive purchase-queue-table-wrap">
+                                    <table class="table align-middle mb-0 purchase-queue-table">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Mã lô</th>
+                                                <th>Sản phẩm</th>
+                                                <th>ĐVT</th>
+                                                <th>SL nhập</th>
+                                                <th>Số bó QR</th>
+                                                <th>Trạng thái</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {% for item in receipt.items.all %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+
+                                                    <td class="fw-bold">
+                                                        {% if item.lot %}
+                                                            {{ item.lot.lot_code }}
+                                                        {% else %}
+                                                            -
+                                                        {% endif %}
+                                                    </td>
+
+                                                    <td>
+                                                        {{ item.product_name }}
+                                                    </td>
+
+                                                    <td>
+                                                        {{ item.unit|default:"cành" }}
+                                                    </td>
+
+                                                    <td class="text-end fw-bold">
+                                                        {{ item.quantity|floatformat:0 }}
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        {% if item.lot %}
+                                                            {{ item.lot.bundles.count }}
+                                                        {% else %}
+                                                            0
+                                                        {% endif %}
+                                                    </td>
+
+                                                    <td>
+                                                        <span class="status-pill">
+                                                            Đã tạo QR bó
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="text-end mt-3">
+                                <button type="button" class="btn btn-success">
+                                    <i class="bi bi-check2-circle"></i>
+                                    Xác nhận đã dán tem & nhập kho
+                                </button>
+                            </div>
+
+                        </div>
+                    {% empty %}
+                        <div class="empty-state py-4">
+                            Chưa có phiếu nào chờ dán tem QR
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+            <div class="transport-po-list" id="pendingStockInOrdersBox">
+
+                {% for po in pending_stock_in_orders %}
+
+                    <div class="transport-po-card" data-po-id="{{ po.id }}">
+                    <form method="post" action="{% url 'inventory:create_bundle_labels_from_purchase_order' po.id %}">
+                        {% csrf_token %}
+
+                        <div class="transport-po-header inventory-po-header">
+
+                            <div>
+                                <div class="transport-supplier-name">
+                                    {{ po.transport_supplier_display }}
+                                </div>
+
+                                <div class="transport-po-code">
+                                    {{ po.po_code }}
+                                </div>
+                            </div>
+
+                            <div class="inventory-approval-step">
+                                <div class="info-label">Người đặt hàng</div>
+                                <div class="info-value">
+                                    Kinh doanh / Kế toán
+                                </div>
+
+                                <div class="approval-check-icon">
+                                    <i class="bi bi-check2"></i>
+                                </div>
+                            </div>
+
+                            <div class="inventory-approval-step">
+                                <div class="info-label">Tài xế xác nhận</div>
+                                <div class="info-value">
+                                    {{ po.driver_name|default:"Chưa có tài xế nhận" }}
+                                </div>
+
+                                <div class="approval-check-icon">
+                                    <i class="bi bi-check2"></i>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="info-label">Phương tiện</div>
+                                <div class="info-value">
+                                    {{ po.vehicle_info|default:"-" }}
+                                </div>
+                            </div>
+
+                            <div class="transport-po-actions">
+                                <div class="driver-confirmed-box">
+                                    <div class="driver-confirmed-icon pending">
+                                        <i class="bi bi-hourglass-split"></i>
+                                    </div>
+
+                                    <div class="driver-confirmed-time">
+                                        Chờ kho nhận
+                                    </div>
+                                </div>
+
+                                <div class="mt-2">
+                                    <span class="status-pill">
+                                        {{ po.get_status_display }}
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="transport-po-items mt-3">
+
+                            <div class="table-responsive purchase-queue-table-wrap">
+                                <table class="table align-middle mb-0 purchase-queue-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:48px;">#</th>
+                                            <th>Loại hoa</th>
+                                            <th>Mã hoa</th>
+                                            <th>Nhà cung cấp</th>
+                                            <th>ĐVT</th>
+                                            <th>Quy cách bó</th>
+                                            <th>SL đặt</th>
+                                            <th>SL tài xế nhận</th>
+                                            <th>SL kho kiểm</th>
+                                            <th>Ghi chú</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {% for item in po.items.all %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+
+                                                <td class="fw-bold">
+                                                    {{ item.product_name }}
+                                                </td>
+
+                                                <td>
+                                                    {{ item.product_code }}
+                                                </td>
+
+                                                <td class="supplier-col">
+                                                    {% if item.supplier_name %}
+                                                        {{ item.supplier_name }}
+                                                    {% else %}
+                                                        {{ po.supplier_name }}
+                                                    {% endif %}
+                                                </td>
+
+                                                <td>
+                                                    {{ item.unit|default:"cành" }}
+                                                </td>
+
+                                                <td class="text-center">
+                                                    <input type="number"
+                                                        name="stems_per_bundle_{{ item.id }}"
+                                                        class="form-control form-control-sm text-center warehouse-bundle-input"
+                                                        value="{% if item.warehouse_check_draft %}{{ item.warehouse_check_draft.stems_per_bundle }}{% else %}{{ item.stems_per_bundle|default:50 }}{% endif %}"
+                                                        min="1"
+                                                        data-item-id="{{ item.id }}">
+                                                </td>
+
+                                                <td class="text-end fw-bold">
+                                                    {{ item.ordered_quantity }}
+                                                </td>
+
+                                                <td class="text-end fw-bold">
+                                                    {{ item.driver_received_quantity|default:item.ordered_quantity }}
+                                                </td>
+
+                                                <td>
+                                                    <input type="number"
+                                                        name="stock_in_qty_{{ item.id }}"
+                                                        class="form-control form-control-sm warehouse-check-input"
+                                                        value="{% if item.warehouse_check_draft %}{{ item.warehouse_check_draft.checked_quantity }}{% else %}{{ item.driver_received_quantity|default:item.ordered_quantity }}{% endif %}"
+                                                        min="0"
+                                                        step="0.01"
+                                                        data-item-id="{{ item.id }}">
+                                                </td>
+
+                                                <td>
+                                                    {% if item.note %}
+                                                        {{ item.note }}
+                                                    {% else %}
+                                                        <span class="empty-data">không có</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="10" class="text-center text-muted py-4">
+                                                    Chưa có sản phẩm nào trong đơn đặt mua
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-qr-code"></i>
+                                Tạo QR bó
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                {% empty %}
+
+                    <div class="text-center py-5">
+                        <i class="bi bi-box-seam" style="font-size:64px;color:#d1d5db;"></i>
+                        <h5 class="fw-bold mt-3">Chưa có đơn vận chuyển chờ nhập kho</h5>
+                        <div class="text-muted">
+                            Khi tài xế hoàn thành vận chuyển, đơn sẽ xuất hiện tại đây.
+                        </div>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+            <div class="col-md-4">
+                <a href="{% url 'inventory:rose_inventory' %}" class="module-card">
+                    <div>
+                        <h5>Kho hoa hồng</h5>
+                        <p>Quản lý tồn kho, hàng đặt, hàng thiếu và nhập hoa hồng.</p>
+                    </div>
+                    <i class="bi bi-flower1"></i>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a href="{% url 'inventory:flower_leaf_inventory' %}" class="module-card">
+                    <div>
+                        <h5>Kho hoa/lá phụ</h5>
+                        <p>Quản lý hoa phụ, lá phụ, hàng nhập và hàng còn thiếu.</p>
+                    </div>
+                    <i class="bi bi-leaf"></i>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a href="{% url 'inventory:sale_inventory' %}" class="module-card">
+                    <div>
+                        <h5>Kho Sale</h5>
+                        <p>Theo dõi hàng sale giữ, hàng đã phân bổ và hàng chờ xuất.</p>
+                    </div>
+                    <i class="bi bi-cart-check"></i>
+                </a>
+            </div>
+                <div class="col-md-4">
+                    <a href="{% url 'inventory:damaged_inventory' %}" class="module-card">
+                        <div>
+                            <h5>Hoa/Lá phụ hủy</h5>
+                            <p>
+                                Theo dõi hàng hủy, hao hụt, quá hạn sử dụng và không đạt tiêu chuẩn.
+                            </p>
+                        </div>
+
+                        <i class="bi bi-trash3"></i>
+                    </a>
+                </div>
+            <div class="col-md-4">
+                <a href="{% url 'inventory:material_inventory' %}" class="module-card">
+                    <div>
+                        <h5>Kho vật tư</h5>
+                        <p>Quản lý thùng, đá gel, phụ liệu, phí đóng thùng và vật tư đóng gói.</p>
+                    </div>
+                    <i class="bi bi-box-seam"></i>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a href="{% url 'inventory:finished_inventory' %}" class="module-card">
+                    <div>
+                        <h5>Kho thành phẩm</h5>
+                        <p>Theo dõi hàng đã sơ chế, đóng bó và chuẩn bị xuất kho.</p>
+                    </div>
+                    <i class="bi bi-check2-square"></i>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a href="{% url 'inventory:raw_inventory' %}" class="module-card">
+                    <div>
+                        <h5>Kho nguyên liệu</h5>
+                        <p>Quản lý nguyên liệu đầu vào, hàng mới nhập và hàng chờ sơ chế.</p>
+                    </div>
+                    <i class="bi bi-box-seam-fill"></i>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL NHẬP KHO -->
+<div class="modal fade" id="stockInModal" tabindex="-1" aria-labelledby="stockInModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 rounded-4">
+
+            <form method="post" action="{% url 'inventory:create_stock_in' %}" id="stockInForm">
+                {% csrf_token %}
+
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title fw-bold" id="stockInModalLabel">
+                            Nhập kho
+                        </h5>
+                        <div class="text-muted small">
+                            Tạo phiếu nhập hoa, lá phụ hoặc vật tư
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Chọn nhóm hàng nhập</label>
+
+                        <div class="d-flex gap-3 flex-wrap">
+                            <label class="check-card">
+                                <input type="radio" name="product_group" value="HH" class="product-group-radio">
+                                <span>Hoa Hồng</span>
+                            </label>
+
+                            <label class="check-card">
+                                <input type="radio" name="product_group" value="HP" class="product-group-radio">
+                                <span>Hoa/Lá Phụ</span>
+                            </label>
+
+                            <label class="check-card">
+                                <input type="radio" name="product_group" value="VT" class="product-group-radio">
+                                <span>Vật Tư</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+
+                        <div class="col-md-4">
+                            <label class="form-label">Ngày nghiệp vụ</label>
+                            <input type="date"
+                                name="business_date"
+                                value="{{ business_date|date:'Y-m-d' }}"
+                                class="form-control">
+                            <div class="form-text">
+                                Sau 00:00 hệ thống tự đưa về ngày hôm trước. Có thể đổi nếu cần.
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <label class="form-label fw-semibold">Nhà cung cấp</label>
+
+                            <div class="input-group">
+                                <input type="text"
+                                       name="supplier"
+                                       id="supplierInput"
+                                       class="form-control"
+                                       list="supplierList"
+                                       placeholder="Nhập tên hoặc mã nhà cung cấp NCC..."
+                                       required>
+
+                                <button type="button" class="btn btn-outline-secondary" onclick="clearSupplier()">
+                                    Xóa
+                                </button>
+                            </div>
+
+                            <datalist id="supplierList">
+                                {% for supplier in suppliers %}
+                                    <option value="{{ supplier.ma_kh }} - {{ supplier.ten_khach_hang }}"></option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+
+                    </div>
+
+                    <div class="product-input-box">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-5">
+                                <label class="form-label fw-semibold">Tên hoa / sản phẩm</label>
+
+                                <div class="input-group">
+                                    <input type="text"
+                                           id="productInput"
+                                           class="form-control"
+                                           list="productList"
+                                           placeholder="Chọn nhóm hàng trước rồi nhập tên sản phẩm...">
+
+                                    <button type="button" class="btn btn-outline-secondary" onclick="clearProduct()">
+                                        Xóa
+                                    </button>
+                                </div>
+
+                                <datalist id="productList"></datalist>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">ĐVT</label>
+                                <input type="text" id="unitInput" class="form-control" readonly>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">Độ hoa</label>
+
+                                <div class="input-group">
+                                    <input type="text"
+                                           id="gradeInput"
+                                           class="form-control"
+                                           placeholder="VD: 50, 60, A...">
+
+                                    <button type="button" class="btn btn-outline-secondary" onclick="clearGrade()">
+                                        Xóa
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Số lượng</label>
+
+                                <div class="input-group">
+                                    <input type="number"
+                                           id="quantityInput"
+                                           class="form-control"
+                                           placeholder="Nhập số lượng"
+                                           min="0"
+                                           step="0.01">
+
+                                    <button type="button" class="btn btn-outline-secondary" onclick="clearQuantity()">
+                                        Xóa
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-outline-success" onclick="addProductToReceipt()">
+                                <i class="bi bi-plus-circle"></i>
+                                Thêm sản phẩm
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold mb-0">Danh sách sản phẩm nhập kho</h6>
+                            <span class="text-muted small" id="itemCountText">0 sản phẩm</span>
+                        </div>
+
+                        <div class="receipt-list" id="receiptItems">
+                            <div class="empty-state py-4">
+                                Chưa có sản phẩm nào trong phiếu nhập
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="items_json" id="itemsJson">
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        Đóng
+                    </button>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i>
+                        Nhập kho
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL XUẤT KHO -->
+<div class="modal fade" id="stockOutModal" tabindex="-1" aria-labelledby="stockOutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 rounded-4">
+
+            <form method="post" action="{% url 'inventory:create_stock_out' %}" id="stockOutForm">
+                {% csrf_token %}
+
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title fw-bold" id="stockOutModalLabel">
+                            Xuất kho
+                        </h5>
+                        <div class="text-muted small">
+                            Tạo phiếu xuất kho sale, xuất hủy hoặc sale trực tiếp
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nhân viên thực hiện</label>
+
+                        <div class="product-input-box">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <div class="info-label">Mã nhân viên</div>
+                                    <div class="info-value">
+                                        {{ current_employee.ma_nv|default:"Chưa liên kết" }}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="info-label">Họ tên</div>
+                                    <div class="info-value">
+                                        {{ current_employee.ho_ten|default:request.user.username }}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="info-label">Bộ phận</div>
+                                    <div class="info-value">
+                                        {{ current_employee.bo_phan|default:"Chưa liên kết" }}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="info-label">Chức vụ</div>
+                                    <div class="info-value">
+                                        {{ current_employee.chuc_vu|default:"Chưa liên kết" }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Chọn loại xuất kho</label>
+
+                        <div class="d-flex gap-3 flex-wrap">
+                            <label class="check-card">
+                                <input type="radio" name="stock_out_type" value="HH" class="stock-out-type-radio">
+                                <span>Hoa Hồng</span>
+                            </label>
+
+                            <label class="check-card">
+                                <input type="radio" name="stock_out_type" value="HP" class="stock-out-type-radio">
+                                <span>Hoa/Lá Phụ</span>
+                            </label>
+
+                            <label class="check-card">
+                                <input type="radio" name="stock_out_type" value="DIRECT_SALE" class="stock-out-type-radio">
+                                <span>Sale trực tiếp</span>
+                            </label>
+
+                            <label class="check-card">
+                                <input type="radio" name="stock_out_type" value="DAMAGED" class="stock-out-type-radio">
+                                <span>Xuất hoa Hủy</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+
+                            <div class="col-md-4">
+                                <label class="form-label">Ngày nghiệp vụ</label>
+                                <input type="date"
+                                    name="business_date"
+                                    value="{{ business_date|date:'Y-m-d' }}"
+                                    class="form-control">
+                                <div class="form-text">
+                                    Sau 00:00 hệ thống tự đưa về ngày hôm trước. Có thể đổi nếu cần.
+                                </div>
+                            </div>
+
+                        <div class="col-md-8">
+                            <label class="form-label fw-semibold">Nhà cung cấp</label>
+                            <input type="text"
+                                   id="stockOutSupplierInput"
+                                   class="form-control"
+                                   readonly
+                                   placeholder="Tự hiển thị theo sản phẩm đã chọn">
+                        </div>
+
+                    </div>
+
+                    <div class="product-input-box">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Tên hoa / sản phẩm</label>
+
+                                <div class="input-group">
+                                    <input type="text"
+                                           id="stockOutProductInput"
+                                           class="form-control"
+                                           list="stockOutProductList"
+                                           placeholder="Chọn loại xuất trước rồi nhập tên sản phẩm...">
+
+                                    <button type="button" class="btn btn-outline-secondary" onclick="clearStockOutProduct()">
+                                        Xóa
+                                    </button>
+                                </div>
+
+                                <datalist id="stockOutProductList"></datalist>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">ĐVT</label>
+                                <input type="text" id="stockOutUnitInput" class="form-control" readonly>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">Độ hoa</label>
+                                <input type="text" id="stockOutGradeInput" class="form-control">
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">Tồn kho</label>
+                                <input type="text" id="stockOutAvailableInput" class="form-control" readonly>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">Số lượng</label>
+                                <input type="number"
+                                       id="stockOutQuantityInput"
+                                       class="form-control"
+                                       min="0"
+                                       step="0.01"
+                                       placeholder="Nhập SL">
+                            </div>
+
+                        </div>
+
+                        <div class="row g-3 mt-2">
+
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold">Lý do Sale/Hủy</label>
+
+                                <select id="stockOutReasonSelect" class="form-select">
+                                    <option value="">Chọn lý do...</option>
+                                    <option value="Hoa/Lá Phụ đến ngày Sale">Hoa/Lá Phụ đến ngày Sale</option>
+                                    <option value="Hoa/Lá Phụ quá nở">Hoa/Lá Phụ quá nở</option>
+                                    <option value="Hoa/Lá Phụ từ Sale xuất hủy">Hoa/Lá Phụ từ Sale xuất hủy</option>
+                                    <option value="Hoa/Lá Phụ dập, xấu không đạt chuẩn">Hoa/Lá Phụ dập, xấu không đạt chuẩn</option>
+                                    <option value="Hoa/Lá Phụ hàng bán không chạy">Hoa/Lá Phụ hàng bán không chạy</option>
+                                    <option value="Hoa/Lá Phụ có dấu hiệu hư trước ngày chuyển Sale">Hoa/Lá Phụ có dấu hiệu hư trước ngày chuyển Sale</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 d-none" id="stockOutOtherReasonBox">
+                                <label class="form-label fw-semibold">Lý do khác</label>
+                                <input type="text"
+                                       id="stockOutOtherReasonInput"
+                                       class="form-control"
+                                       placeholder="Nhập lý do khác...">
+                            </div>
+
+                        </div>
+
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-outline-primary" onclick="addProductToStockOut()">
+                                <i class="bi bi-plus-circle"></i>
+                                Thêm sản phẩm
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold mb-0">Danh sách sản phẩm xuất kho</h6>
+                            <span class="text-muted small" id="stockOutItemCountText">0 sản phẩm</span>
+                        </div>
+
+                        <div class="receipt-list" id="stockOutItems">
+                            <div class="empty-state py-4">
+                                Chưa có sản phẩm nào trong phiếu xuất
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="stock_out_items_json" id="stockOutItemsJson">
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        Đóng
+                    </button>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i>
+                        Hoàn Thành
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+<!-- MODAL KIỂM KÊ NHANH -->
+<div class="modal fade" id="quickInventoryCheckModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 rounded-4">
+
+            <form method="post" action="{% url 'inventory:quick_inventory_check' %}">
+                {% csrf_token %}
+
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title fw-bold">Kiểm kê Kho tổng</h5>
+                        <div class="text-muted small">
+                            Điều chỉnh nhanh số lượng vào đúng kho cần nhập dữ liệu
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Ngày nghiệp vụ</label>
+                        <input type="date"
+                            name="business_date"
+                            value="{{ business_date|date:'Y-m-d' }}"
+                            class="form-control">
+                        <div class="form-text">
+                            Nếu nhập sau 00:00, hệ thống mặc định tính cho ngày hôm trước.
+                        </div>
+                    </div>
+                                        <div class="mb-3">
+                        <label class="form-label fw-semibold">Chọn nhóm hàng</label>
+
+                        <div class="d-flex gap-3 flex-wrap">
+                            <label class="check-card">
+                                <input type="radio" name="check_product_group" value="HH" class="check-product-group-radio">
+                                <span>Hoa Hồng</span>
+                            </label>
+
+                            <label class="check-card">
+                                <input type="radio" name="check_product_group" value="HP" class="check-product-group-radio">
+                                <span>Hoa/Lá Phụ</span>
+                            </label>
+
+                            <label class="check-card">
+                                <input type="radio" name="check_product_group" value="VT" class="check-product-group-radio">
+                                <span>Vật Tư</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Chọn kho nhận dữ liệu sau kiểm kê</label>
+
+                        <div class="d-flex gap-3 flex-wrap">
+                            <label class="check-card">
+                                <input type="radio" name="check_warehouse_type" value="FINISHED">
+                                <span>Kho thành phẩm</span>
+                            </label>
+
+                            <label class="check-card">
+                                <input type="radio" name="check_warehouse_type" value="RAW">
+                                <span>Kho nguyên liệu</span>
+                            </label>
+
+                            <label class="check-card">
+                                <input type="radio" name="check_warehouse_type" value="SALE" id="checkWarehouseSale">
+                                <span>Kho Sale</span>
+                            </label>
+
+                            <label class="check-card">
+                                <input type="radio" name="check_warehouse_type" value="DAMAGED">
+                                <span>Hoa/Lá phụ hủy</span>
+                            </label>
+
+                            <label class="check-card">
+                                <input type="radio" name="check_warehouse_type" value="MATERIAL">
+                                <span>Kho vật tư</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 d-none" id="saleTypeBox">
+                        <label class="form-label fw-semibold">Chọn loại kho Sale</label>
+
+                        <div class="d-flex gap-3 flex-wrap">
+                            <label class="check-card">
+                                <input type="radio" name="check_sale_type" value="50c">
+                                <span>Kho 50c</span>
+                            </label>
+
+                            <label class="check-card">
+                                <input type="radio" name="check_sale_type" value="100c">
+                                <span>Kho 100c</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="product-input-box">
+                        <div class="row g-3">
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Tên hoa / sản phẩm</label>
+                                    <input type="text"
+                                        name="check_product_name"
+                                        id="checkProductInput"
+                                        class="form-control"
+                                        list="checkProductList"
+                                        placeholder="Chọn nhóm hàng rồi nhập tên sản phẩm...">
+
+                                <datalist id="checkProductList"></datalist>
+
+                                <input type="hidden" name="check_product_code" id="checkProductCodeInput">
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">Tồn kho hiện tại</label>
+                                <input type="text"
+                                       id="checkCurrentStockInput"
+                                       class="form-control"
+                                       value="0"
+                                       readonly>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">ĐVT</label>
+                                <input type="text"
+                                       name="check_unit"
+                                       id="checkUnitInput"
+                                       class="form-control"
+                                       readonly>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Số lượng tồn cuối cùng</label>
+                                <input type="number"
+                                    name="check_quantity"
+                                    class="form-control border-success"
+                                    min="0"
+                                    step="0.01"
+                                    placeholder="Nhập số lượng tồn kho cuối cùng">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-outline-success" onclick="addQuickCheckItem()">
+                            <i class="bi bi-plus-circle"></i>
+                            Thêm sản phẩm
+                        </button>
+                    </div>
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold mb-0">Danh sách sản phẩm kiểm kê</h6>
+                            <span class="text-muted small" id="quickCheckItemCountText">0 sản phẩm</span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width:50px;">#</th>
+                                            <th>Mã SP</th>
+                                            <th>Tên hoa / sản phẩm</th>
+                                            <th>ĐVT</th>
+                                            <th>Kho</th>
+                                            <th class="text-end">Tồn hiện tại</th>
+                                            <th class="text-end">Tồn cuối cùng</th>
+                                            <th style="width:90px;">Xóa</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="quickCheckItemsTable">
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted py-4">
+                                                Chưa có sản phẩm nào
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-4">
+                                            Chưa có sản phẩm nào
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="check_items_json" id="quickCheckItemsJson">
+                        <div class="alert alert-warning mt-4 mb-0 rounded-4">
+                            Chức năng này dùng để nhập hoặc điều chỉnh tồn kho cuối cùng.
+                            Khi hoàn thành, số lượng trong kho sẽ được cập nhật đúng bằng số lượng bạn nhập.
+                            Sản phẩm chưa có trong kho sẽ được tự động thêm mới.
+                        </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        Đóng
+                    </button>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i>
+                        Hoàn thành
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+<script>
+    window.productsHH = [
+        {% for p in products_hh %}
+            {
+                code: "{{ p.code }}",
+                name: "{{ p.name }}",
+                unit: "{{ p.unit|default:'' }}"
+            },
+        {% endfor %}
+    ];
+
+    window.productsHP = [
+        {% for p in products_hp %}
+            {
+                code: "{{ p.code }}",
+                name: "{{ p.name }}",
+                unit: "{{ p.unit|default:'' }}"
+            },
+        {% endfor %}
+    ];
+
+    window.productsVT = [
+        {% for p in products_vt %}
+            {
+                code: "{{ p.code }}",
+                name: "{{ p.name }}",
+                unit: "{{ p.unit|default:'' }}"
+            },
+        {% endfor %}
+    ];
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/apps/inventory.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Kho thành phẩm{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/inventory-finished.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-card">
+
+    <div class="page-card-header">
+        <div>
+            <h4 class="mb-1">Kho Thành Phẩm</h4>
+            <p class="text-muted mb-0">
+                Hiển thị chi tiết thành phẩm theo từng bill sơ chế
+            </p>
+        </div>
+        <div class="finished-total-box">
+            <div class="finished-total-label">
+                Tổng hoa thành phẩm
+            </div>
+            <div class="finished-total-value">
+                {{ total_all_finished_stems|floatformat:0 }}
+                <span>cành</span>
+            </div>
+        </div>
+        <form method="get" class="d-flex gap-2">
+            <input type="text"
+                   name="q"
+                   value="{{ q }}"
+                   class="form-control"
+                   placeholder="Tìm mã, tên hoa hoặc nhân viên...">
+
+            <button class="btn btn-success">
+                <i class="bi bi-search"></i>
+                Tìm
+            </button>
+        </form>
+    </div>
+
+    <div class="page-card-body">
+
+    {% if finished_groups %}
+    <div class="finished-bill-list">
+        {% for group in finished_groups %}
+
+            <div class="finished-bill-card">
+
+                <div class="finished-main">
+                    <div class="finished-code">{{ group.product_code }}</div>
+
+                    <div class="finished-title-row">
+                        <h5 class="finished-name">
+                            {{ group.product_name }}
+                        </h5>
+
+                        <button type="button"
+                                class="finished-detail-btn"
+                                data-bs-toggle="modal"
+                                data-bs-target="#finishedDetailModal{{ forloop.counter }}"
+                                title="Xem chi tiết">
+                            <i class="bi bi-journal-text"></i>
+                        </button>
+                    </div>
+
+                    <div class="finished-sub">
+                        <i class="bi bi-people me-1"></i>
+                        Số lượt sơ chế:
+                        <strong>{{ group.items|length }}</strong>
+                    </div>
+
+                    <div class="finished-worker-list">
+                        {% for item in group.latest_items %}
+                            <div class="finished-worker-row">
+                                <span>
+                                    <i class="bi bi-person-badge me-1"></i>
+                                    {{ item.ticket.employee_name }}
+                                </span>
+
+                                <span>
+                                    {{ item.ticket.start_time|date:"d/m/Y H:i" }}
+                                </span>
+
+                                <span>
+                                    {{ item.final_bunches|floatformat:0 }} bó /
+                                    {{ item.final_stems|floatformat:0 }} cành
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="finished-info">
+                    <div class="info-label">Quy cách</div>
+                    <div class="info-value">
+                        {{ group.bunch_type|default:"Chưa có dữ liệu" }}
+                    </div>
+                </div>
+
+                <div class="finished-info">
+                    <div class="info-label">Tổng số bó</div>
+                    <div class="info-value text-success">
+                        {{ group.total_finished_bunches|floatformat:0 }}
+                    </div>
+                </div>
+
+                <div class="finished-info">
+                    <div class="info-label">Tổng cành TP</div>
+                    <div class="info-value">
+                        {{ group.total_finished_stems|floatformat:0 }}
+                    </div>
+                </div>
+
+                <div class="finished-info">
+                    <div class="info-label">Tồn tổng/loại hoa</div>
+
+                    <div class="stock-split">
+                        <span class="stock-finished">
+                            {{ group.total_finished_stems|floatformat:0 }} cành TP
+                        </span>
+
+                        <span class="stock-raw">
+                            {{ group.total_raw_stems|floatformat:0 }} cành nguyên liệu
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal fade" id="finishedDetailModal{{ forloop.counter }}" tabindex="-1">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                    <div class="modal-content border-0 rounded-4">
+                        <div class="modal-header bg-success text-white rounded-top-4">
+                            <div>
+                                <h5 class="modal-title fw-bold">
+                                    <i class="bi bi-card-list me-2"></i>
+                                    Chi tiết sơ chế - {{ group.product_name }}
+                                </h5>
+                                <div class="small opacity-75">
+                                    Mã hoa: {{ group.product_code }} • Tổng {{ group.items|length }} lượt sơ chế
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body bg-light">
+                            <div class="detail-processing-list">
+                                {% for item in group.items %}
+                                <div class="detail-processing-card">
+
+                                    <div class="detail-processing-main">
+                                        <div>
+                                            <div class="fw-bold text-success">
+                                                <i class="bi bi-person-badge me-1"></i>
+                                                {{ item.ticket.employee_name }}
+                                            </div>
+                                            <div class="small text-muted">
+                                                {{ item.ticket.employee_code }} - {{ item.ticket.employee_position }}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div class="detail-label">Mã phiếu</div>
+                                            <div class="detail-value">
+                                                {{ item.ticket.ticket_code }}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div class="detail-label">Ngày nghiệp vụ</div>
+                                            <div class="detail-value">
+                                                {{ item.ticket.business_date|date:"d/m/Y" }}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div class="detail-label">Thời gian tạo phiếu</div>
+                                            <div class="detail-value">
+                                                {{ item.ticket.start_time|date:"d/m/Y H:i" }}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div class="detail-label">Quy cách</div>
+                                            <div class="detail-value">
+                                                {{ item.bunch_type|default:"-" }}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div class="detail-label">Số bó</div>
+                                            <div class="detail-value text-success">
+                                                {{ item.final_bunches|floatformat:0 }}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div class="detail-label">Tổng cành</div>
+                                            <div class="detail-value">
+                                                {{ item.final_stems|floatformat:0 }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="detail-shift-grid">
+                                        <div class="shift-box">
+                                            <span>Ca 1</span>
+                                            <strong>
+                                                {% if item.ticket.shift1_start and item.ticket.shift1_end %}
+                                                    {{ item.ticket.shift1_start|date:"H:i" }} - {{ item.ticket.shift1_end|date:"H:i" }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </strong>
+                                            <small>{{ item.ticket.shift1_hours|floatformat:2 }} giờ</small>
+                                        </div>
+
+                                        <div class="shift-box">
+                                            <span>Ca 2</span>
+                                            <strong>
+                                                {% if item.ticket.shift2_start and item.ticket.shift2_end %}
+                                                    {{ item.ticket.shift2_start|date:"H:i" }} - {{ item.ticket.shift2_end|date:"H:i" }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </strong>
+                                            <small>{{ item.ticket.shift2_hours|floatformat:2 }} giờ</small>
+                                        </div>
+
+                                        <div class="shift-box total">
+                                            <span>Tổng giờ làm</span>
+                                            <strong>{{ item.ticket.total_work_hours|floatformat:2 }} giờ</strong>
+                                            <small>Giờ tính lương</small>
+                                        </div>
+
+                                        <div class="shift-box overtime">
+                                            <span>Tăng ca</span>
+                                            <strong>{{ item.ticket.overtime_hours|floatformat:2 }} giờ</strong>
+                                            <small>Vượt 8 giờ/ngày</small>
+                                        </div>
+
+                                        <div class="shift-box note">
+                                            <span>Ghi chú</span>
+                                            <strong>{{ item.ticket.work_note|default:"-" }}</strong>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            {% endfor %}
+                                                        </div>
+                        </div>
+
+                        <div class="modal-footer bg-white">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                Đóng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        Chưa có dữ liệu kho thành phẩm
+    </div>
+{% endif %}
+
+</div>
+</div>
+
+<script>
+document.addEventListener("click", function (event) {
+    if (
+        event.target.closest('[data-bs-dismiss="modal"]') ||
+        event.target.classList.contains("modal-backdrop")
+    ) {
+        setTimeout(function () {
+            document.querySelectorAll(".modal-backdrop").forEach(function (backdrop) {
+                backdrop.remove();
+            });
+
+            document.body.classList.remove("modal-open");
+            document.body.style.removeProperty("overflow");
+            document.body.style.removeProperty("padding-right");
+        }, 200);
+    }
+});
+</script>
+{% endblock %}

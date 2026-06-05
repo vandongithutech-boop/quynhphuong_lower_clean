@@ -1,0 +1,38 @@
+@media (max-width: 992px) {
+    .app-sidebar {
+        width: 86px;
+    }
+
+    .brand-name,
+    .brand-sub,
+    .nav-title,
+    .sidebar-link span {
+        display: none;
+    }
+
+    .app-content {
+        margin-left: 86px;
+    }
+
+    .sidebar-link {
+        justify-content: center;
+    }
+
+    .data-item {
+        grid-template-columns: 1fr;
+    }
+
+    .action-group {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    .receipt-product-card {
+        grid-template-columns: 1fr;
+    }
+
+    .action-icon-group {
+        justify-content: flex-start;
+    }
+}

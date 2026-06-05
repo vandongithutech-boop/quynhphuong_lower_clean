@@ -1,0 +1,31 @@
+.modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.modern-table thead {
+    display: none;
+}
+
+.modern-table tbody tr {
+    background: #fff;
+    box-shadow: 0 4px 18px rgba(15,23,42,.05);
+}
+
+.modern-table tbody td {
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+.modern-table tbody td:first-child {
+    border-left: 1px solid var(--border);
+    border-radius: 16px 0 0 16px;
+}
+
+.modern-table tbody td:last-child {
+    border-right: 1px solid var(--border);
+    border-radius: 0 16px 16px 0;
+}

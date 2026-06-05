@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard vận chuyển{% endblock %}
+{% block page_title %}Dashboard vận chuyển{% endblock %}
+{% block page_subtitle %}Tổng quan vận chuyển, kiểm tra xe, nhà xe và lệnh đặt mua hoa{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/transport.css' %}">
+<link rel="stylesheet" href="{% static 'css/core/modal.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-card">
+
+    <div class="page-card-header">
+        <div>
+            <h3 class="page-card-title">Dashboard vận chuyển</h3>
+            <div class="mt-2">
+                <span class="status-pill">
+                    <i class="bi bi-truck"></i>
+                    Tuyến: {{ routes|length }}
+                </span>
+                <span class="status-pill ms-2">
+                    <i class="bi bi-building"></i>
+                    Nhà xe: {{ companies|length }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-card-body">
+
+        <div class="dashboard-stat-grid">
+
+            <div class="dashboard-stat-card">
+                <div class="stat-icon bg-green">
+                    <i class="bi bi-bag-check"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Đơn đặt mua hoa</div>
+                    <div class="stat-value">{{ total_purchase_orders }}</div>
+                </div>
+            </div>
+
+            <div class="dashboard-stat-card">
+                <div class="stat-icon bg-yellow">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Chờ tài xế nhận</div>
+                    <div class="stat-value">{{ pending_purchase_orders }}</div>
+                </div>
+            </div>
+
+            <div class="dashboard-stat-card">
+                <div class="stat-icon bg-blue">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Hôm nay</div>
+                    <div class="stat-value">{{ today_purchase_orders }}</div>
+                </div>
+            </div>
+
+            <div class="dashboard-stat-card">
+                <div class="stat-icon bg-purple">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Hoàn thành</div>
+                    <div class="stat-value">{{ completed_purchase_orders }}</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row g-4 mt-2">
+
+            <div class="col-md-4">
+                <a href="{% url 'transport:transport_list' %}"
+                   class="transport-dashboard-tile">
+                    <div class="tile-icon">
+                        <i class="bi bi-truck-front"></i>
+                    </div>
+                    <div>
+                        <h5>Danh mục nhà xe</h5>
+                        <p>Xem và quản lý thông tin nhà xe, giờ nhận, giờ xuất bến.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <button type="button"
+                        class="transport-dashboard-tile w-100 text-start"
+                        data-bs-toggle="modal"
+                        data-bs-target="#vehicleInspectionModal">
+                    <div class="tile-icon">
+                        <i class="bi bi-clipboard2-check"></i>
+                    </div>
+                    <div>
+                        <h5>Kiểm tra xe</h5>
+                        <p>Tài xế kiểm tra xe trước khi bắt đầu vận hành.</p>
+                    </div>
+                </button>
+            </div>
+
+            <div class="col-md-4">
+                <a href="#purchaseOrdersFromSales"
+                   class="transport-dashboard-tile">
+                    <div class="tile-icon">
+                        <i class="bi bi-bag-check"></i>
+                    </div>
+                    <div>
+                        <h5>Đơn đặt mua hoa</h5>
+                        <p>Tiếp nhận lệnh đặt mua hoa từ phòng kinh doanh.</p>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+        <div id="purchaseOrdersFromSales" class="transport-order-section mt-4">
+
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="fw-bold mb-0">
+                    <i class="bi bi-truck text-success me-2"></i>
+                    Đơn chờ tài xế xử lý
+                </h5>
+            </div>
+
+            <div class="transport-po-list">
+
+                {% for po in purchase_orders %}
+
+                <div class="transport-po-card">
+
+                    <div class="transport-po-header">
+
+                        <div>
+                            <div class="transport-supplier-name">
+                                {{ po.transport_supplier_display }}
+                            </div>
+
+                            <div class="transport-po-code">
+                                {{ po.po_code }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="info-label">Tài xế xác nhận</div>
+                            <div class="info-value">
+                                {{ po.driver_name|default:"Chưa có tài xế nhận" }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="info-label">Phương tiện</div>
+                            <div class="info-value">
+                                {{ po.vehicle_info|default:"-" }}
+                            </div>
+                        </div>
+                        <div class="transport-po-actions">
+
+                            {% if po.status == "draft" %}
+                                <form method="post"
+                                    action="{% url 'transport:accept_purchase_order' po.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="bi bi-check-circle"></i>
+                                        Xác nhận
+                                    </button>
+                                </form>
+
+                            {% else %}
+                                <div class="driver-confirmed-box">
+                                    <div class="driver-confirmed-icon">
+                                        <i class="bi bi-check-lg"></i>
+                                    </div>
+
+                                    <div class="driver-confirmed-time">
+                                        {% if po.driver_confirmed_at %}
+                                            {{ po.driver_confirmed_at|date:"d/m/Y H:i" }}
+                                        {% else %}
+                                            Đã xác nhận
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div class="mt-2">
+                                <span class="status-pill">
+                                    {{ po.get_status_display }}
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="transport-po-items mt-3">
+
+                        <div class="table-responsive purchase-queue-table-wrap">
+                            <table class="table align-middle mb-0 purchase-queue-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:48px;">#</th>
+                                        <th>Loại hoa</th>
+                                        <th>Mã hoa</th>
+                                        <th>Nhà cung cấp</th>
+                                        <th>ĐVT</th>
+                                        <th>Quy cách bó</th>
+                                        <th>SL đặt</th>
+                                        <th>SL thực nhận</th>
+                                        <th>Xác nhận</th>
+                                        <th class="note-col">Ghi chú</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in po.items.all %}
+                                    <tr class="{% if item.driver_confirmed %}driver-item-confirmed{% endif %}">
+                                        <td>{{ forloop.counter }}</td>
+
+                                        <td class="fw-bold">{{ item.product_name }}</td>
+
+                                        <td>{{ item.product_code }}</td>
+
+                                        <td class="supplier-col">
+                                            {% if item.supplier_name %}
+                                                {{ item.supplier_name }}
+                                            {% else %}
+                                                {{ po.supplier_name }}
+                                            {% endif %}
+                                        </td>
+
+                                        <td>{{ item.unit|default:"cành" }}</td>
+
+                                        <td class="text-center">{{ item.stems_per_bundle }}</td>
+
+                                        <td class="text-end fw-bold">
+                                            {{ item.ordered_quantity }}
+                                        </td>
+
+                                        <td>
+                                            <input type="number"
+                                                class="form-control form-control-sm driver-received-input"
+                                                value="{{ item.driver_received_quantity|default:item.ordered_quantity }}"
+                                                min="0"
+                                                step="0.01"
+                                                data-item-id="{{ item.id }}">
+                                        </td>
+
+                                        <td class="text-center">
+                                        <input type="checkbox"
+                                            class="form-check-input driver-confirm-checkbox"
+                                            data-po-id="{{ po.id }}"
+                                            data-item-id="{{ item.id }}"
+                                            data-url="{% url 'transport:driver_confirm_purchase_item' item.id %}"
+                                            {% if item.driver_confirmed %}checked{% endif %}>
+                                        </td>
+                                        <td class="note-col">
+                                            {% if item.note %}
+                                                {{ item.note }}
+                                            {% else %}
+                                                <span class="empty-data">không có</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="10" class="text-center text-muted py-4">
+                                            Chưa có sản phẩm nào trong đơn đặt mua
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                    <div class="text-end mt-3">
+                        {% if po.status == "assigned_driver" %}
+                            <form method="post"
+                                action="{% url 'transport:complete_purchase_order' po.id %}"
+                                class="complete-po-form d-none"
+                                data-po-id="{{ po.id }}">
+                                {% csrf_token %}
+
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check2-circle"></i>
+                                    Hoàn thành
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% empty %}
+
+                <div class="text-center py-5">
+                    <i class="bi bi-bag-check" style="font-size:64px;color:#d1d5db;"></i>
+                    <h5 class="fw-bold mt-3">Chưa có đơn chờ tài xế xử lý</h5>
+                    <div class="text-muted">
+                        Khi có đơn đặt mua mới, tài xế sẽ thấy tại đây.
+                    </div>
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+    {% include 'transport/partials/vehicle_inspection_modal.html' %}
+        {% block extra_js %}
+        <script src="{% static 'js/apps/transport.js' %}"></script>
+        {% endblock %}
+{% endblock %}

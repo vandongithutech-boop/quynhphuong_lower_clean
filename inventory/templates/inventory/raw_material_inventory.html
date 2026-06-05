@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Kho nguyên liệu{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/inventory-raw.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-card">
+    <div class="page-card-body">
+        <div class="raw-card-list">
+
+            {% for row in flower_rows %}
+                <div class="raw-row-card">
+
+                    <div class="raw-index">
+                        {{ forloop.counter }}
+                    </div>
+
+                    <div class="raw-product">
+                        <div class="flower-name">{{ row.product_name }}</div>
+                        <div class="flower-code">{{ row.product_code }}</div>
+                    </div>
+
+                    <div class="raw-info">
+                        <span>Tổng tồn kho nguyên liệu</span>
+                        <strong class="text-success">{{ row.total_qty|floatformat:0 }}</strong>
+                    </div>
+
+                    <div class="raw-info">
+                        <span>Mới nhập</span>
+                        <strong class="text-primary">{{ row.new_qty|floatformat:0 }}</strong>
+                    </div>
+
+                    <div class="raw-info">
+                        <span>Cần sơ chế</span>
+                        <strong class="text-warning">{{ row.processing_qty|floatformat:0 }}</strong>
+                    </div>
+
+                    <div class="raw-info">
+                        <span>Cảnh báo</span>
+                        <strong class="{% if row.warning_qty > 0 %}text-danger{% else %}text-muted{% endif %}">
+                            {{ row.warning_qty|floatformat:0 }}
+                        </strong>
+                    </div>
+
+                    <div class="raw-info">
+                        <span>Đơn vị</span>
+                        <strong>{{ row.unit|default:"-" }}</strong>
+                    </div>
+
+                    <div class="raw-supplier">
+                        <span>NCC</span>
+                        <strong>{{ row.supplier_name }}</strong>
+                    </div>
+                    <div class="raw-supplier">
+                        <span>Mã lô</span>
+                        <strong>{{ row.lot_code }}</strong>
+
+                        {% if row.has_lot %}
+                            <a href="{{ row.trace_url }}" target="_blank" class="btn btn-sm btn-outline-success mt-2">
+                                Truy xuất
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="raw-date">
+                        <span>Ngày nhập gần nhất</span>
+                        <strong>{{ row.latest_date|date:"d/m/Y" }}</strong>
+                    </div>
+
+                    <div class="raw-status">
+                        <span>Tồn lâu nhất</span>
+
+                        {% if row.oldest_days >= 2 %}
+                            <strong class="status-danger">{{ row.oldest_days }} ngày</strong>
+                        {% elif row.oldest_days == 1 %}
+                            <strong class="status-warning">{{ row.oldest_days }} ngày</strong>
+                        {% else %}
+                            <strong class="status-success">0 ngày</strong>
+                        {% endif %}
+                    </div>
+
+                </div>
+            {% empty %}
+                <div class="empty-state">
+                    Chưa có dữ liệu kho nguyên liệu
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

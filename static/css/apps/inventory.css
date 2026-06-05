@@ -1,0 +1,74 @@
+.inventory-approval-step{
+    text-align:center;
+}
+
+.approval-check-icon{
+    width:40px;
+    height:40px;
+
+    margin:10px auto 0;
+
+    border-radius:50%;
+
+    background:#16a34a;
+
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:24px;
+    font-weight:700;
+
+    box-shadow:
+        0 10px 25px rgba(22,163,74,.25);
+
+    border:3px solid #ffffff;
+}
+
+.approval-check-icon i{
+    font-size:24px;
+    line-height:1;
+}
+
+
+.inventory-po-header {
+    display: grid !important;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr auto !important;
+    gap: 24px !important;
+    align-items: start !important;
+}
+
+.inventory-approval-step {
+    text-align: center;
+    min-width: 130px;
+}
+
+.approval-check-icon {
+    width: 42px;
+    height: 42px;
+    margin: 10px auto 0;
+    border-radius: 50%;
+    background: #16a34a;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 10px 25px rgba(22, 163, 74, .25);
+}
+
+.approval-check-icon i {
+    font-size: 22px;
+}
+
+.transport-po-actions {
+    text-align: center;
+}
+
+.driver-confirmed-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

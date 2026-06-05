@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Danh mục nhà xe{% endblock %}
+{% block page_title %}Danh mục nhà xe{% endblock %}
+{% block page_subtitle %}Quản lý thông tin nhà xe, số điện thoại, giờ nhận và giờ xuất bến{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/transport.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-card">
+
+    <div class="page-card-header">
+
+        <div>
+            <h3 class="page-card-title">
+                Danh mục nhà xe
+            </h3>
+
+            <div class="mt-2">
+                <span class="status-pill">
+                    <i class="bi bi-truck-front"></i>
+                    Tổng nhà xe: {{ companies|length }}
+                </span>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+
+            <a href="{% url 'transport:transport_dashboard' %}"
+               class="btn btn-outline-success">
+                <i class="bi bi-arrow-left"></i>
+                Dashboard
+            </a>
+
+            <form method="get" class="filter-bar m-0">
+
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ keyword }}"
+                        class="form-control"
+                        placeholder="Tìm tên nhà xe..."
+                        autocomplete="off"
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-search"></i>
+                    Tìm
+                </button>
+
+                {% if keyword %}
+                    <a href="{% url 'transport:transport_list' %}"
+                       class="btn btn-outline-secondary">
+                        Xóa tìm
+                    </a>
+                {% endif %}
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="page-card-body">
+
+        <div class="data-list">
+
+            {% for company in companies %}
+
+            <div class="data-item">
+
+                <div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+
+                        {% if company.receive_type == 'factory' %}
+                            <span class="badge bg-success-subtle text-success border">
+                                Nhận tại xưởng
+                            </span>
+                        {% elif company.receive_type == 'station' %}
+                            <span class="badge bg-primary-subtle text-primary border">
+                                Nhận tại bến
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary-subtle text-secondary border">
+                                Khác
+                            </span>
+                        {% endif %}
+
+                        {% if company.is_active %}
+                            <span class="status-pill">
+                                Đang dùng
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary-subtle text-secondary border">
+                                Ngưng dùng
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                    <div class="item-title">
+                        {{ company.name }}
+                    </div>
+
+                    <div class="item-sub mt-1">
+                        {% if company.phone %}
+                            <i class="bi bi-telephone"></i>
+                            {{ company.phone }}
+                        {% else %}
+                            <span class="empty-data">
+                                chưa có số điện thoại
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="info-label">
+                        Giờ nhận tại xưởng
+                    </div>
+
+                    <div class="info-value">
+                        {% if company.receive_time %}
+                            {{ company.receive_time }}
+                        {% else %}
+                            <span class="empty-data">
+                                chưa có dữ liệu
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="info-label">
+                        Giờ xe xuất bến
+                    </div>
+
+                    <div class="info-value">
+                        {% if company.departure_time %}
+                            {{ company.departure_time }}
+                        {% else %}
+                            <span class="empty-data">
+                                chưa có dữ liệu
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="info-label">
+                        Ghi chú
+                    </div>
+
+                    <div class="info-value">
+                        {% if company.note %}
+                            {{ company.note }}
+                        {% else %}
+                            <span class="empty-data">
+                                chưa có ghi chú
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="action-group">
+                    <a href="/admin/transport/transportcompany/{{ company.id }}/change/"
+                       class="icon-btn"
+                       title="Sửa nhà xe">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="text-center py-5">
+
+                <div class="mb-3">
+                    <i class="bi bi-truck-front empty-icon"></i>
+                </div>
+
+                <h5 class="fw-bold">
+                    Chưa có danh mục nhà xe
+                </h5>
+
+                <div class="text-muted mb-4">
+                    Hệ thống hiện chưa có nhà xe nào.
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,137 @@
+.receipt-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.receipt-item-card {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+.receipt-product-card {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 0.8fr auto;
+    gap: 22px;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 18px 20px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+    transition: all 0.2s ease;
+}
+
+.receipt-product-card:hover {
+    border-color: #bbf7d0;
+    box-shadow: 0 10px 24px rgba(22, 163, 74, 0.08);
+    transform: translateY(-1px);
+}
+
+.receipt-code-badge {
+    background: #dcfce7;
+    color: #15803d;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.receipt-group-badge {
+    background: #f8fafc;
+    color: #15803d;
+    border: 1px solid #e5e7eb;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.receipt-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.receipt-sub {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+
+.receipt-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #6b7280;
+    letter-spacing: .04em;
+    margin-bottom: 5px;
+}
+
+.receipt-value {
+    font-size: 14px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.receipt-empty {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.action-icon-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.action-icon-btn {
+    width: 38px;
+    height: 38px;
+    border: 1px solid #e5e7eb;
+    border-radius: 13px;
+    background: #ffffff;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.action-icon-btn:hover {
+    background: #f8fafc;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
+}
+
+.action-icon-btn.edit:hover {
+    color: #2563eb;
+}
+
+.action-icon-btn.delete:hover {
+    color: #dc2626;
+}
+
+.receipt-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.receipt-list::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 999px;
+}
+
+.receipt-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+}
+
+.receipt-list::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

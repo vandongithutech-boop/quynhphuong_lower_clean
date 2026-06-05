@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Báo cáo tồn kho{% endblock %}
+
+{% block page_title %}Báo cáo{% endblock %}
+{% block page_subtitle %}Tổng hợp tồn kho, nhập xuất và sản phẩm phát sinh trong ngày{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/inventory-report.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="report-page">
+
+    <div class="report-header-card">
+        <div>
+            <h4>Báo cáo tồn kho tổng hợp</h4>
+            <p>
+                Theo dõi tồn kho theo từng sản phẩm, chia theo kho nguyên liệu,
+                thành phẩm, sale, hủy và vật tư.
+            </p>
+        </div>
+
+        <form method="get" class="report-filter">
+            <input type="date"
+                name="date"
+                value="{{ selected_date|date:'Y-m-d' }}"
+                class="form-control">
+
+            <input type="text"
+                name="q"
+                value="{{ q }}"
+                class="form-control"
+                placeholder="Tìm mã hoặc tên sản phẩm...">
+
+            <select name="warehouse" class="form-select">
+                <option value="">Tất cả kho</option>
+                {% for value, label in warehouse_choices %}
+                    <option value="{{ value }}" {% if warehouse_filter == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <select name="group" class="form-select">
+                <option value="">Tất cả nhóm</option>
+                {% for value, label in product_group_choices %}
+                    <option value="{{ value }}" {% if group_filter == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-search"></i>
+                Lọc
+            </button>
+
+            <a href="{% url 'inventory:export_inventory_stock_report_excel' %}?date={{ selected_date|date:'Y-m-d' }}&q={{ q }}&warehouse={{ warehouse_filter }}&group={{ group_filter }}"
+            class="btn btn-outline-success">
+                <i class="bi bi-file-earmark-excel"></i>
+                Xuất Excel
+            </a>
+        </form>
+    </div>
+
+    <div class="report-summary-grid">
+
+        <div class="report-stat-card">
+            <span>Tổng tồn kho</span>
+            <strong>{{ total_stock_qty|floatformat:0 }}</strong>
+            <small>Tổng số lượng toàn hệ thống</small>
+        </div>
+
+        <div class="report-stat-card">
+            <span>Số sản phẩm đang có</span>
+            <strong>{{ total_product_count }}</strong>
+            <small>Tính theo mã sản phẩm</small>
+        </div>
+
+        <div class="report-stat-card">
+            <span>Đơn tạo hôm nay</span>
+            <strong>{{ today_created_orders }}</strong>
+            <small>Đơn đặt mua phát sinh</small>
+        </div>
+
+        <div class="report-stat-card">
+            <span>Đơn xuất hôm nay</span>
+            <strong>{{ today_exported_orders }}</strong>
+            <small>Phiếu xuất kho đã tạo</small>
+        </div>
+
+        <div class="report-stat-card">
+            <span>Nhập hôm nay</span>
+            <strong>{{ total_in_today|floatformat:0 }}</strong>
+            <small>Tổng số lượng nhập</small>
+        </div>
+
+        <div class="report-stat-card">
+            <span>Xuất hôm nay</span>
+            <strong>{{ total_out_today|floatformat:0 }}</strong>
+            <small>Tổng số lượng xuất</small>
+        </div>
+
+    </div>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-6">
+            <div class="report-panel">
+                <div class="report-panel-title">
+                    <i class="bi bi-arrow-down-circle text-success"></i>
+                    Top sản phẩm nhập nhiều hôm nay
+                </div>
+
+                {% for item in top_in_products %}
+                    <div class="top-row">
+                        <div>
+                            <strong>{{ item.product_name|default:"-" }}</strong>
+                            <span>{{ item.product_code|default:"-" }}</span>
+                        </div>
+                        <b>{{ item.total_quantity|floatformat:0 }} {{ item.unit|default:"" }}</b>
+                    </div>
+                {% empty %}
+                    <div class="empty-report">Chưa có dữ liệu nhập hôm nay</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="report-panel">
+                <div class="report-panel-title">
+                    <i class="bi bi-arrow-up-circle text-danger"></i>
+                    Top sản phẩm xuất nhiều hôm nay
+                </div>
+
+                {% for item in top_out_products %}
+                    <div class="top-row">
+                        <div>
+                            <strong>{{ item.product_name|default:"-" }}</strong>
+                            <span>{{ item.product_code|default:"-" }}</span>
+                        </div>
+                        <b>{{ item.total_quantity|floatformat:0 }} {{ item.unit|default:"" }}</b>
+                    </div>
+                {% empty %}
+                    <div class="empty-report">Chưa có dữ liệu xuất hôm nay</div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="report-table-card">
+        <div class="report-table-header">
+            <div>
+                <h5>Bảng tồn kho chi tiết theo từng loại hoa</h5>
+            
+            </div>
+        </div>
+
+        <div class="report-table-wrap">
+            <table class="report-excel-table">
+                <thead>
+                    <tr>
+                        <th class="sticky-col">Mã SP</th>
+                        <th class="sticky-col-2">Tên sản phẩm</th>
+                        <th>Nhóm</th>
+                        <th>ĐVT</th>
+                        <th>Nguyên liệu</th>
+                        <th>Thành phẩm</th>
+                        <th>Sale 50c</th>
+                        <th>Sale 100c</th>
+                        <th>Hủy 50c</th>
+                        <th>Hủy 100c</th>
+                        <th>Vật tư</th>
+                        <th>Tổng</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for row in report_rows %}
+                        <tr>
+                            <td class="sticky-col code-cell">{{ row.product_code }}</td>
+                            <td class="sticky-col-2 name-cell">{{ row.product_name }}</td>
+                            <td>{{ row.product_group }}</td>
+                            <td>{{ row.unit }}</td>
+
+                            <td class="num-cell">{{ row.raw_qty|floatformat:0 }}</td>
+                            <td class="num-cell">{{ row.finished_qty|floatformat:0 }}</td>
+                            <td class="num-cell sale-cell">{{ row.sale_50_qty|floatformat:0 }}</td>
+                            <td class="num-cell sale-cell">{{ row.sale_100_qty|floatformat:0 }}</td>
+                            <td class="num-cell damaged-cell">{{ row.damaged_50_qty|floatformat:0 }}</td>
+                            <td class="num-cell damaged-cell">{{ row.damaged_100_qty|floatformat:0 }}</td>
+                            <td class="num-cell">{{ row.material_qty|floatformat:0 }}</td>
+                            <td class="num-cell total-cell">{{ row.total_qty|floatformat:0 }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="12" class="empty-report">
+                                Chưa có dữ liệu tồn kho phù hợp
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

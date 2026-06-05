@@ -1,0 +1,459 @@
+/* ===========================
+   VEHICLE INSPECTION MODAL
+=========================== */
+
+.inspection-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+}
+
+.inspection-row {
+    display: grid !important;
+    grid-template-columns: 210px 72px 1fr !important;
+    align-items: center !important;
+    gap: 16px !important;
+    padding: 14px 16px !important;
+    border: 1px solid #d1fae5 !important;
+    border-radius: 18px !important;
+    background: rgba(255,255,255,.9) !important;
+}
+
+.inspection-name {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    font-weight: 800 !important;
+    color: #111827 !important;
+    white-space: nowrap !important;
+}
+
+.inspection-name i {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 12px !important;
+    background: #dcfce7 !important;
+    color: #15803d !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 17px !important;
+}
+
+.ios-switch {
+    position: relative !important;
+    width: 56px !important;
+    height: 32px !important;
+    margin: 0 !important;
+    display: inline-block !important;
+}
+
+.ios-switch input {
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.ios-switch span {
+    position: absolute !important;
+    cursor: pointer !important;
+    inset: 0 !important;
+    background: #d1d5db !important;
+    border-radius: 999px !important;
+    transition: .25s !important;
+}
+
+.ios-switch span::before {
+    content: "" !important;
+    position: absolute !important;
+    width: 26px !important;
+    height: 26px !important;
+    left: 3px !important;
+    top: 3px !important;
+    background: #fff !important;
+    border-radius: 50% !important;
+    transition: .25s !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,.18) !important;
+}
+
+.ios-switch input:checked + span {
+    background: #16a34a !important;
+}
+
+.ios-switch input:checked + span::before {
+    transform: translateX(24px) !important;
+}
+
+.inspection-note {
+    height: 44px !important;
+    border-radius: 16px !important;
+}
+
+.fuel-fields {
+    display: grid !important;
+    grid-template-columns: 140px 1fr !important;
+    gap: 10px !important;
+}
+
+/* ===========================
+   DASHBOARD
+=========================== */
+
+.dashboard-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.dashboard-stat-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 22px;
+    padding: 18px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .05);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 22px;
+}
+
+.bg-green { background: #16a34a; }
+.bg-yellow { background: #f59e0b; }
+.bg-blue { background: #2563eb; }
+.bg-purple { background: #7c3aed; }
+
+.stat-label {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.stat-value {
+    font-size: 26px;
+    font-weight: 900;
+    color: #111827;
+}
+
+.transport-dashboard-tile {
+    min-height: 180px;
+    padding: 22px;
+    border-radius: 24px;
+    border: 1px solid #d1fae5;
+    background: #ffffff;
+    display: flex;
+    gap: 16px;
+    text-decoration: none;
+    color: #111827;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .05);
+    transition: .2s;
+}
+
+.transport-dashboard-tile:hover {
+    transform: translateY(-3px);
+    color: #111827;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, .08);
+}
+
+.transport-dashboard-tile h5 {
+    font-weight: 900;
+    margin-bottom: 8px;
+}
+
+.transport-dashboard-tile p {
+    color: #6b7280;
+    margin: 0;
+}
+
+.tile-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
+    background: #dcfce7;
+    color: #15803d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex: none;
+}
+
+/* ===========================
+   PURCHASE ORDER CARD
+=========================== */
+
+.transport-order-section {
+    border: 1px dashed #bbf7d0;
+    border-radius: 24px;
+    padding: 18px;
+    background: rgba(255,255,255,.75);
+}
+
+.transport-po-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.transport-po-card {
+    border: 1px solid #dbe3ef;
+    border-radius: 22px;
+    background: #ffffff;
+    padding: 18px;
+    box-shadow: 0 10px 24px rgba(15,23,42,.04);
+}
+
+.transport-po-header {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr auto;
+    gap: 18px;
+    align-items: start;
+}
+
+.transport-supplier-name {
+    font-size: 24px;
+    font-weight: 900;
+    color: #111827;
+}
+
+.transport-po-code {
+    margin-top: 4px;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.transport-po-actions {
+    text-align: right;
+}
+
+.transport-done-icon,
+.driver-confirmed-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #16a34a;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.driver-confirmed-box {
+    text-align: center;
+}
+
+.driver-confirmed-time {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 700;
+}
+
+/* ===========================
+   EXCEL STYLE PRODUCT TABLE
+=========================== */
+
+.transport-po-items {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.transport-po-items .purchase-queue-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #b6c7dc;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+.transport-po-items .purchase-queue-table {
+    width: 100%;
+    min-width: 1250px;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-bottom: 0;
+    font-size: 13px;
+}
+
+.transport-po-items .purchase-queue-table thead th {
+    background: #eaf0f7;
+    color: #1f2937;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 12px;
+    padding: 12px 10px;
+    border: 1px solid #b6c7dc;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.transport-po-items .purchase-queue-table tbody td {
+    padding: 10px 10px;
+    border: 1px solid #cbd5e1;
+    color: #111827;
+    vertical-align: middle;
+    background: #ffffff;
+}
+
+.transport-po-items .purchase-queue-table tbody tr:nth-child(even) td {
+    background: #f8fafc;
+}
+
+.transport-po-items .purchase-queue-table tbody tr:hover td {
+    background: #ecfdf5;
+}
+
+.transport-po-items .purchase-queue-table th:nth-child(1),
+.transport-po-items .purchase-queue-table td:nth-child(1) {
+    width: 48px;
+    text-align: center;
+}
+
+.transport-po-items .purchase-queue-table th:nth-child(2),
+.transport-po-items .purchase-queue-table td:nth-child(2) {
+    width: 230px;
+}
+
+.transport-po-items .purchase-queue-table th:nth-child(3),
+.transport-po-items .purchase-queue-table td:nth-child(3) {
+    width: 110px;
+}
+
+.transport-po-items .purchase-queue-table th:nth-child(4),
+.transport-po-items .purchase-queue-table td:nth-child(4) {
+    width: 280px;
+}
+
+.transport-po-items .purchase-queue-table th:nth-child(5),
+.transport-po-items .purchase-queue-table td:nth-child(5) {
+    width: 90px;
+    text-align: center;
+}
+
+.transport-po-items .purchase-queue-table th:nth-child(6),
+.transport-po-items .purchase-queue-table td:nth-child(6) {
+    width: 110px;
+    text-align: center;
+}
+
+.transport-po-items .purchase-queue-table th:nth-child(7),
+.transport-po-items .purchase-queue-table td:nth-child(7) {
+    width: 90px;
+    text-align: right;
+    font-weight: 800;
+}
+
+.transport-po-items .purchase-queue-table th:nth-child(8),
+.transport-po-items .purchase-queue-table td:nth-child(8) {
+    width: 135px;
+}
+
+.transport-po-items .purchase-queue-table th:nth-child(9),
+.transport-po-items .purchase-queue-table td:nth-child(9) {
+    width: 95px;
+    text-align: center;
+}
+
+.transport-po-items .purchase-queue-table th:nth-child(10),
+.transport-po-items .purchase-queue-table td:nth-child(10) {
+    width: 130px;
+}
+
+.supplier-col {
+    font-weight: 800;
+    color: #111827;
+    white-space: normal;
+    line-height: 1.35;
+}
+
+.note-col {
+    font-size: 12px;
+    color: #64748b;
+    font-style: italic;
+}
+
+.driver-received-input {
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid #86efac;
+    font-weight: 800;
+    text-align: right;
+}
+
+.driver-confirm-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.driver-item-confirmed td {
+    background: #dcfce7 !important;
+    color: #14532d !important;
+    font-weight: 700;
+}
+
+.driver-item-confirmed td:first-child {
+    border-left: 5px solid #16a34a !important;
+}
+
+.driver-item-confirmed td:nth-child(2) {
+    position: relative;
+}
+
+.driver-item-confirmed td:nth-child(2)::after {
+    content: "✓ ĐÃ NHẬN";
+    display: inline-block;
+    margin-left: 10px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #16a34a;
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media (max-width: 992px) {
+    .dashboard-stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .transport-po-header {
+        grid-template-columns: 1fr;
+    }
+
+    .transport-po-actions {
+        text-align: left;
+    }
+}
+
+@media (max-width: 768px) {
+    .inspection-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    .fuel-fields {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard-stat-grid {
+        grid-template-columns: 1fr;
+    }
+}

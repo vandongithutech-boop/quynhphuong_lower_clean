@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Truy xuất thùng {{ box.box_code }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body">
+            <h3 class="fw-bold text-success mb-2">
+                Truy xuất thùng Packing
+            </h3>
+            <div class="text-muted">
+                Mã thùng: {{ box.box_code }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Thông tin thùng</h5>
+
+                    <div class="mb-2">
+                        <span class="text-muted">Mã thùng:</span>
+                        <strong>{{ box.box_code }}</strong>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="text-muted">Số thùng:</span>
+                        <strong>{{ box.box_number }}</strong>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="text-muted">Loại thùng:</span>
+                        <strong>{{ box.box_type.code|default:"-" }}</strong>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="text-muted">Tổng bó:</span>
+                        <strong>{{ box.total_bunches|floatformat:2 }}</strong>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="text-muted">Tổng cành:</span>
+                        <strong>{{ box.total_stems|floatformat:0 }}</strong>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="text-muted">NW:</span>
+                        <strong>{{ box.nw|floatformat:2 }}</strong>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="text-muted">GW:</span>
+                        <strong>{{ box.gw|floatformat:2 }}</strong>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="text-muted">Trạng thái:</span>
+                        <strong>{{ box.status }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Thông tin đơn hàng</h5>
+
+                    <div class="mb-2">
+                        <span class="text-muted">Lệnh sản xuất:</span>
+                        <strong>{{ production.production_code }}</strong>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="text-muted">Mã đơn hàng:</span>
+                        <strong>{{ order.order_code }}</strong>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="text-muted">Khách hàng:</span>
+                        <strong>{{ order.customer_name }}</strong>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="text-muted">Mã khách:</span>
+                        <strong>{{ order.customer_code|default:"-" }}</strong>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="text-muted">Khu vực:</span>
+                        <strong>{{ order.customer_area|default:"-" }}</strong>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="text-muted">Thời gian đơn:</span>
+                        <strong>{{ order.order_time|date:"d/m/Y H:i" }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3">Sản phẩm trong thùng</h5>
+
+            {% if items %}
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã lô</th>
+                                <th>Sản phẩm</th>
+                                <th>Mã SP</th>
+                                <th>Số bó</th>
+                                <th>Số cành</th>
+                                <th>Cành/bó</th>
+                                <th>Truy xuất lô</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <strong>
+                                        {% if item.lot %}
+                                            {{ item.lot.lot_code }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </strong>
+                                </td>
+                                <td>{{ item.product_name }}</td>
+                                <td>{{ item.product_code }}</td>
+                                <td>{{ item.bunches|floatformat:2 }}</td>
+                                <td>{{ item.stems|floatformat:0 }}</td>
+                                <td>{{ item.stems_per_bunch }}</td>
+                                <td>
+                                    {% if item.lot %}
+                                        <a href="{% url 'traceability:trace_lot_detail' item.lot.lot_code %}"
+                                           class="btn btn-sm btn-outline-success"
+                                           target="_blank">
+                                            Xem lô
+                                        </a>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-muted">Thùng này chưa có sản phẩm.</div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

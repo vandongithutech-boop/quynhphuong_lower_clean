@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}PKL {{ box.box_code }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/packing-box-detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="pkl-toolbar">
+    <a href="{% url 'production:packing_detail' box.production_order.id %}" class="pkl-back-btn">
+        <i class="bi bi-arrow-left"></i>
+        Quay lại đóng gói
+    </a>
+
+    <button onclick="window.print()" class="pkl-print-btn">
+        <i class="bi bi-printer"></i>
+        In PKL
+    </button>
+</div>
+
+<div class="company-pkl-page">
+    <div class="pkl-header">
+
+        <div class="company-info">
+            <img src="{% static 'images/logo.jpg' %}" class="company-logo">
+
+            <div>
+                <div class="company-name">
+                    Quynh Phuong Dalat Co., ltd
+                </div>
+
+                <div>42 Van Thanh St, Ward 5, Dalat City</div>
+                <div>Phone/zalo/X: 0908447323</div>
+            </div>
+        </div>
+
+        
+<div class="header-right">
+
+    <div class="header-time">
+        <div>{% now "d/m/y" %}</div>
+        <div>{% now "H:i" %}</div>
+    </div>
+
+    <div class="header-code">
+        {{ box.production_order.order.customer_code|default:"K003" }}
+    </div>
+
+<div class="box-code-wrapper">
+    <div class="box-code">
+        {{ box.box_code }}
+    </div>
+
+    <img src="data:image/png;base64,{{ qr_code|safe }}"
+     class="box-qr"
+     alt="QR Code">
+</div>
+</div>
+</div>
+
+    <div class="client-section">
+        <div class="client-title">CLIENT</div>
+
+        <div class="client-name">
+            {{ box.production_order.customer_name }}
+        </div>
+
+        <div class="client-country">
+            PHNOM PENH, CAMBODIA
+        </div>
+    </div>
+
+    <div class="product-grid">
+
+        <table class="pkl-table">
+            <thead>
+                <tr>
+                    <th class="stt-col">STT</th>
+                    <th>SẢN PHẨM</th>
+                    <th class="sl-col">SL</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in left_items %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ item.product_name }}</td>
+                        <td>{{ item.stems|floatformat:0 }}</td>
+                    </tr>
+                {% endfor %}
+
+                {% for i in "123456"|make_list %}
+                    <tr>
+                        <td></td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <table class="pkl-table">
+            <thead>
+                <tr>
+                    <th class="stt-col">STT</th>
+                    <th>SẢN PHẨM</th>
+                    <th class="sl-col">SL</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in right_items %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ item.product_name }}</td>
+                        <td>{{ item.stems|floatformat:0 }}</td>
+                    </tr>
+                {% endfor %}
+
+                {% for i in "123456"|make_list %}
+                    <tr>
+                        <td></td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

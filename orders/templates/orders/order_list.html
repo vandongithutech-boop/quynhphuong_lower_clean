@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Đơn hàng{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/orders.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Đơn hàng</h4>
+        <p class="page-subtitle">Quản lý đơn hàng, khách hàng, sản phẩm và vận chuyển</p>
+    </div>
+
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createOrderModal">
+        <i class="bi bi-plus-circle"></i>
+        Tạo đơn hàng
+    </button>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Tổng đơn hàng</p>
+                <h3>{{ total_orders }}</h3>
+            </div>
+            <i class="bi bi-receipt-cutoff"></i>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Hôm nay</p>
+                <h3>{{ today_orders }}</h3>
+            </div>
+            <i class="bi bi-calendar-check"></i>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Đang xử lý</p>
+                <h3>{{ processing_orders }}</h3>
+            </div>
+            <i class="bi bi-hourglass-split"></i>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Hoàn thành</p>
+                <h3>{{ completed_orders }}</h3>
+            </div>
+            <i class="bi bi-check-circle"></i>
+        </div>
+    </div>
+</div>
+
+<div class="page-card">
+    <div class="page-card-header">
+        <form method="get" class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text"
+                   name="q"
+                   value="{{ q }}"
+                   placeholder="Tìm mã đơn, khách hàng, sản phẩm, loại hoa, nhà cung cấp...">
+
+            {% if status %}
+                <input type="hidden" name="status" value="{{ status }}">
+            {% endif %}
+        </form>
+
+        <div class="filter-actions">
+            <a href="{% url 'orders:order_list' %}"
+               class="filter-btn {% if status == 'all' %}active{% endif %}">
+                Tất cả
+            </a>
+
+            <a href="?status=new"
+               class="filter-btn {% if status == 'new' %}active{% endif %}">
+                Mới tạo
+            </a>
+
+            <a href="?status=processing"
+               class="filter-btn {% if status == 'processing' %}active{% endif %}">
+                Đang xử lý
+            </a>
+
+            <a href="?status=completed"
+               class="filter-btn {% if status == 'completed' %}active{% endif %}">
+                Hoàn thành
+            </a>
+
+            <a href="?status=cancelled"
+               class="filter-btn {% if status == 'cancelled' %}active{% endif %}">
+                Đã huỷ
+            </a>
+        </div>
+    </div>
+
+    <div class="order-list">
+        {% for order in orders %}
+            <div class="order-card">
+                <div class="order-top">
+                    <div>
+                        <div class="order-code">
+                            <i class="bi bi-receipt"></i>
+                            {{ order.order_code }}
+                        </div>
+
+                        <div class="order-meta">
+                            <span>
+                                <i class="bi bi-person"></i>
+                                {{ order.customer_name }}
+                            </span>
+
+                            <span>
+                                <i class="bi bi-person-badge"></i>
+                                {{ order.employee_name|default:"Chưa có nhân viên" }}
+                            </span>
+
+                            <span>
+                                <i class="bi bi-truck"></i>
+                                {{ order.transport_vehicle|default:"Chưa có xe" }}
+                            </span>
+
+                            <span>
+                                <i class="bi bi-clock"></i>
+                                {{ order.order_time|date:"d/m/Y H:i" }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        {% if order.status == "new" %}
+                            <span class="status-badge status-new">Mới tạo</span>
+                        {% elif order.status == "processing" %}
+                            <span class="status-badge status-processing">Đang xử lý</span>
+                        {% elif order.status == "completed" %}
+                            <span class="status-badge status-completed">Hoàn thành</span>
+                        {% elif order.status == "cancelled" %}
+                            <span class="status-badge status-cancelled">Đã huỷ</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="order-items">
+                    <div class="order-items-head">
+                        <span>Tên sản phẩm</span>
+                        <span>Loại hoa</span>
+                        <span>Nhà cung cấp</span>
+                        <span>SL tiêu chuẩn</span>
+                        <span>SL sale</span>
+                        <span>DVT</span>
+                        <span>Quy cách</span>
+                    </div>
+
+                    {% for item in order.items.all %}
+                        <div class="order-items-row">
+                            <span>{{ item.product_name }}</span>
+                            <span>{{ item.flower_type|default:"-" }}</span>
+                            <span>{{ item.supplier_name|default:"-" }}</span>
+                            <span>{{ item.standard_quantity }}</span>
+                            <span>{{ item.sale_quantity }}</span>
+                            <span>{{ item.unit|default:"-" }}</span>
+                            <span>{{ item.specification|default:"-" }}</span>
+                        </div>
+                    {% empty %}
+                        <div class="empty-items">
+                            Chưa có sản phẩm trong đơn hàng này
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>Chưa có đơn hàng nào</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="modal fade" id="createOrderModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <form method="post" action="{% url 'orders:order_create' %}" class="modal-content">
+            {% csrf_token %}
+
+            <div class="modal-header">
+                <h5 class="modal-title">Tạo đơn hàng mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="order-info-box mb-4">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <small>Người tạo đơn</small>
+                            <div class="fw-bold text-muted">Chưa phân quyền</div>
+                            <input type="hidden" name="created_by" value="">
+                        </div>
+
+                        <div class="col-md-4 text-center">
+                            <small>Khách hàng</small>
+                            <h3 id="previewCustomerName" class="customer-preview">CHƯA CHỌN KHÁCH HÀNG</h3>
+                            <div id="previewCustomerInfo" class="customer-info-preview"></div>
+                        </div>
+
+                        <div class="col-md-4 text-end">
+                            <small>Thời gian</small>
+                            <div class="fw-bold">{{ now_time|date:"d/m/Y H:i" }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <label class="form-label">Mã đơn hàng</label>
+                        <input type="text" name="order_code" class="form-control" value="{{ new_order_code }}" readonly>
+                    </div>
+
+                    <div class="col-md-9">
+                        <label class="form-label">Khách hàng</label>
+                        <input type="text" id="customerSearch" class="form-control" placeholder="Nhập tên hoặc mã khách hàng...">
+
+                        <input type="hidden" name="customer_code" id="customerCode">
+                        <input type="hidden" name="customer_name" id="customerName">
+                        <input type="hidden" name="customer_address" id="customerAddress">
+                        <input type="hidden" name="customer_area" id="customerArea">
+                        <input type="hidden" name="customer_phone" id="customerPhone">
+
+                        <div id="customerResults" class="suggest-box"></div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0">Chi tiết sản phẩm</h6>
+                </div>
+
+                <div class="selected-products-box mb-3">
+                        <div class="selected-products-title">
+                            <span>
+                                <i class="bi bi-bag-check"></i>
+                                Danh sách sản phẩm đã chọn
+                            </span>
+                            <small id="selectedProductCount">0 sản phẩm</small>
+                        </div>
+
+                        <div id="selectedProductList" class="selected-product-list">
+                            <div class="empty-selected-product">
+                                Chưa có sản phẩm nào trong đơn hàng
+                            </div>
+                        </div>
+                    </div>
+                    <div id="hiddenProductInputs"></div>  
+                    <div id="orderItemRows"></div>  
+                    <div class="floating-add-product">
+                        <button type="button"
+                                class="floating-add-btn"
+                                onclick="saveCurrentProduct()">
+
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                <button type="submit" class="btn btn-success">Lưu đơn hàng</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="quantityModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nhập số lượng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="stock-box mb-3">
+                    <div>
+                        <small>Sản phẩm</small>
+                        <h5 id="stockProductName">---</h5>
+                    </div>
+
+                    <div class="row g-2 mt-2">
+                        <div class="col-6">
+                            <div class="stock-mini">
+                                <small>Tồn cành</small>
+                                <strong id="stockStems">0</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="stock-mini">
+                                <small>Tồn bó</small>
+                                <strong id="stockBunches" class="stock-bunch-text">0 bó</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" id="currentStockLimit" value="0">
+
+                <div class="mb-3">
+                    <label class="form-label">Hoa tiêu chuẩn</label>
+                    <input type="number" id="modalStandardQty" class="form-control" min="0" step="0.01">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Hoa sale</label>
+                    <input type="number" id="modalSaleQty" class="form-control" min="0" step="0.01">
+                </div>
+
+                <div id="quantityWarning" class="text-danger small fw-bold"></div>
+
+                <div id="rawStockWarning" class="raw-stock-warning mt-3" class="d-none"></div>
+                <div id="rawStockWarning" class="raw-stock-warning mt-3 d-none"></div>
+
+                <input type="hidden" id="needProcessingQty" value="0">
+                <input type="hidden" id="rawAvailableQty" value="0">
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-success" onclick="applyQuantity()">Áp dụng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="flowerTypeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content sub-modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chọn phân loại</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <button type="button"
+                                class="type-choice-card"
+                                onclick="selectFlowerType('HH', 'Hoa Hồng')">
+
+                            <div class="type-icon">
+                                <i class="bi bi-flower1"></i>
+                            </div>
+
+                            <strong>Hoa Hồng</strong>
+
+                            <small>Lọc sản phẩm phân loại HH</small>
+                        </button>
+                    </div>
+
+                    <div class="col-6">
+                        <button type="button"
+                                class="type-choice-card"
+                                onclick="selectFlowerType('HP', 'Hoa/Lá Phụ')">
+                            <div class="type-icon">
+                                <i class="bi bi-flower3"></i>
+                            </div>
+
+                            <strong>Hoa/Lá Phụ</strong>
+
+                            <small>Lọc sản phẩm phân loại HP</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/apps/orders.js' %}"></script>
+{% endblock %}

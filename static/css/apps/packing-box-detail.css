@@ -1,0 +1,191 @@
+.pkl-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.pkl-back-btn,
+.pkl-print-btn {
+    border: none;
+    text-decoration: none;
+    border-radius: 14px;
+    padding: 10px 16px;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.pkl-back-btn {
+    background: #f1f5f9;
+    color: #1f2937;
+}
+
+.pkl-print-btn {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+.company-pkl-page {
+    width: 80%;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 18px 22px;
+    font-family: "Times New Roman", serif;
+}
+
+.pkl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.company-info {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    font-size: 14px;
+}
+
+.company-logo {
+    width: 70px;
+}
+
+.company-name {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.header-right {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+}
+
+.header-time {
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.header-code {
+    font-size: 38px;
+    font-weight: 900;
+}
+
+.header-box-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.box-code {
+    width: 110px;
+    height: 64px;
+    background: #c6efce;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: 900;
+}
+
+.box-qr {
+    width: 125px;
+    height: 125px;
+    object-fit: contain;
+    image-rendering: crisp-edges;
+}
+
+.client-section {
+    text-align: center;
+    margin-top: 16px;
+}
+
+.client-title {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.client-name {
+    font-size: 52px;
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+    word-break: break-word;
+}
+
+.client-country {
+    margin-top: 12px;
+    font-size: 28px;
+    font-weight: 900;
+}
+
+.product-grid {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.pkl-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.pkl-table th {
+    background: #dbe5f1;
+    border: 1px solid #cbd5e1;
+    color: #000000;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+    height: 34px;
+}
+
+.pkl-table td {
+    border: 1px solid #d1d5db;
+    height: 34px;
+    font-size: 20px;
+    font-weight: 900;
+    padding: 4px 8px;
+}
+
+.pkl-table td:first-child,
+.pkl-table td:last-child {
+    text-align: center;
+}
+
+.stt-col {
+    width: 70px;
+}
+
+.sl-col {
+    width: 110px;
+}
+
+@media print {
+    .sidebar,
+    .app-sidebar,
+    .topbar,
+    .btn,
+    .page-header,
+    .pkl-toolbar {
+        display: none !important;
+    }
+
+    .app-content {
+        margin-left: 0 !important;
+    }
+
+    .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .company-pkl-page {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+}

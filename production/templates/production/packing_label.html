@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Tem {{ box.box_code }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/packing-label.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="label-toolbar">
+    <button onclick="window.print()" class="print-label-btn">
+        <i class="bi bi-printer"></i>
+        In 2 tem
+    </button>
+
+    <a href="{% url 'production:packing_detail' production.id %}" class="back-btn">
+        ← Quay lại đóng gói
+    </a>
+</div>
+
+<div class="label-print-area">
+
+    {% for copy in label_copies %}
+        <div class="box-label">
+
+            <div class="label-header">
+                <div class="label-company">
+                    <img src="{% static 'images/logon.png' %}" class="label-logo">
+
+                   
+                </div>
+                 <div class="company-text">
+                        <strong>Quynh Phuong Dalat Co., ltd</strong>
+                        <span>42 Van Thanh St, Ward 5, Dalat City</span>
+                        <span>Phone/zalo/X: 0908447323</span>
+                    </div>
+                <div class="label-meta">
+
+                    <div class="label-date">
+                        {% now "d/m/y" %}<br>
+                        {% now "H:i" %}
+                    </div>
+
+                    <div class="label-customer-code">
+                        {{ production.order.customer_code|default:"K003" }}
+                    </div>
+
+                    <div class="box-code-wrapper">
+                        <div class="label-box-code">
+                            {{ box.box_code }}
+                        </div>
+
+                        <img src="data:image/png;base64,{{ qr_code }}"
+                             class="label-qr qr-image">
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="label-client">
+                <div class="client-title">CLIENT</div>
+                <div class="client-name">{{ production.customer_name }}</div>
+                <div class="client-country">PHNOM PENH, CAMBODIA</div>
+            </div>
+
+            <div class="label-products">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="stt-col">STT</th>
+                            <th>SẢN PHẨM</th>
+                            <th class="sl-col">SL</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in left_items %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ item.product_name }}</td>
+                                <td>{{ item.stems|floatformat:0 }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        {% for i in "1234"|make_list %}
+                            <tr>
+                                <td>{{ forloop.counter|add:left_items|length }}</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="stt-col">STT</th>
+                            <th>SẢN PHẨM</th>
+                            <th class="sl-col">SL</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in right_items %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ item.product_name }}</td>
+                                <td>{{ item.stems|floatformat:0 }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        {% for i in "1234"|make_list %}
+                            <tr>
+                                <td>{{ forloop.counter|add:right_items|length }}</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

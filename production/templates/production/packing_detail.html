@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Đóng gói {{ production.production_code }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/packing.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Đóng gói đơn hàng</h4>
+        <p class="page-subtitle">
+            {{ production.production_code }} · {{ production.order_code }} · {{ production.customer_name }}
+        </p>
+    </div>
+
+    <a href="{% url 'production:production_list' %}" class="btn-back">
+        <i class="bi bi-arrow-left"></i>
+        Quay lại
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Sản phẩm</p>
+                <h3>{{ production.items.count }}</h3>
+            </div>
+            <i class="bi bi-flower1"></i>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Số thùng</p>
+                <h3>{{ production.boxes.count }}</h3>
+            </div>
+            <i class="bi bi-box-seam"></i>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <a href="{% url 'production:packing_list' production.id %}" class="stat-link-card">
+            <div>
+                <p>Packing List</p>
+                <h3>Xem</h3>
+            </div>
+            <i class="bi bi-file-earmark-spreadsheet"></i>
+        </a>
+    </div>
+
+<div class="col-md-3">
+        {% if has_unpacked_items %}
+            <button type="button"
+                    class="create-box-btn"
+                    data-bs-toggle="modal"
+                    data-bs-target="#packingSetupModal">
+                <i class="bi bi-plus-lg"></i>
+                Tạo thùng mới
+            </button>
+        {% else %}
+            <div class="packing-completed-box">
+                <i class="bi bi-check-circle-fill"></i>
+                Đơn này đã đóng đủ sản phẩm
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="page-card mb-4">
+    <div class="page-card-header">
+        <div>
+            <h5 class="section-title">
+                <i class="bi bi-list-check"></i>
+                Sản phẩm trong đơn cần đóng gói
+            </h5>
+            <p class="section-subtitle">
+                Có thể điều chỉnh số lượng thực tế trước khi tạo thùng
+            </p>
+        </div>
+    </div>
+
+    <form method="post" action="{% url 'production:update_packing_quantities' production.id %}">
+        {% csrf_token %}
+
+        <div class="packing-items">
+            <div class="packing-head">
+                <span>Sản phẩm</span>
+                <span>Tone/Nhóm</span>
+                <span>SL gốc</span>
+                <span>SL sale</span>
+                <span>SL thực tế đóng</span>
+                <span>DVT</span>
+            </div>
+
+            {% for row in packing_rows %}
+                <div class="packing-row">
+                    <span class="product-name">
+                        <i class="bi bi-flower1"></i>
+                        {{ row.item.product_code }} / {{ row.item.product_name }}
+                    </span>
+
+                    <span>{{ row.item.group_name|default:"-" }}</span>
+
+                    <span class="qty-standard">
+                        {{ row.item.standard_quantity }}
+                    </span>
+
+                    <span class="qty-sale">
+                        {{ row.item.sale_quantity }}
+                    </span>
+
+                    <span>
+                        <input type="number"
+                            step="0.01"
+                            min="{{ row.packed_qty|default:0 }}"
+                            max="{{ row.item.standard_quantity|add:row.item.sale_quantity }}"
+                            name="qty_{{ row.item.id }}"
+                            value="{{ row.item.required_quantity }}"
+                            class="qty-input">
+                    </span>
+
+                    <span>{{ row.item.unit|default:"cành" }}</span>
+                </div>
+
+                {% if row.item.warning_note %}
+                    <div class="packing-warning">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        {{ row.item.warning_note }}
+                    </div>
+                {% endif %}
+            {% empty %}
+                <div class="empty-state">
+                    Không có sản phẩm trong lệnh sản xuất
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-footer">
+            <button type="submit" class="btn-save-qty">
+                <i class="bi bi-check2-circle"></i>
+                Lưu số lượng thực tế
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="page-card">
+    <div class="page-card-header">
+        <div>
+            <h5 class="section-title">
+                <i class="bi bi-box-seam"></i>
+                Danh sách thùng đã tạo
+            </h5>
+            <p class="section-subtitle">
+                Mỗi thùng chứa sản phẩm theo quy cách đã chọn
+            </p>
+        </div>
+    </div>
+
+    <div class="box-list">
+        {% for box in production.boxes.all %}
+            <div class="box-card">
+                <div>
+                    <div class="box-code">
+                        <i class="bi bi-box"></i>
+                        {{ box.box_code }}
+                    </div>
+
+                    <div class="box-meta">
+                        <span>Thùng số: {{ box.box_number }}</span>
+                        <span>Tổng bó: {{ box.total_bunches }}</span>
+                        <span>Tổng cành: {{ box.total_stems }}</span>
+                        <span>Chỉ số: {{ box.total_index }} / {{ box.capacity_index }}</span>
+                        <span>NW: {{ box.nw }}</span>
+                        <span>GW: {{ box.gw }}</span>
+
+                        {% if box.status == "full" %}
+                            <span class="box-status status-full">FULL</span>
+                        {% elif box.status == "over" %}
+                            <span class="box-status status-over">THỪA</span>
+                        {% elif box.status == "lack" %}
+                            <span class="box-status status-lack">THIẾU</span>
+                        {% else %}
+                            <span class="box-status status-draft">NHÁP</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="box-action-group">
+                    <a href="{% url 'production:packing_box_detail' box.id %}" class="view-box-btn">
+                        <i class="bi bi-journal-text"></i>
+                        Chi tiết
+                    </a>
+
+                    <a href="{% url 'production:packing_label' box.id %}" class="view-box-btn">
+                        <i class="bi bi-printer"></i>
+                        In tem
+                    </a>
+
+                    <a href="{% url 'production:edit_packing_box' box.id %}" class="edit-box-btn">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        Sửa
+                    </a>
+
+                    <a href="{% url 'production:delete_packing_box' box.id %}"
+                       class="delete-box-btn"
+                       onclick="return confirm('Mở lại {{ box.box_code }} để chỉnh số lượng? Thùng cũ sẽ được xóa và tạo lại.')">
+                        <i class="bi bi-trash3"></i>
+                        Xóa
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>Chưa có thùng nào. Bấm “Tạo thùng mới” để tạo thùng.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="modal fade" id="packingSetupModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <form method="post"
+              action="{% url 'production:create_packing_box' production.id %}"
+              class="modal-content">
+
+            {% csrf_token %}
+
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title">Quy cách đóng gói</h5>
+                    <p class="modal-subtitle">
+                        Chọn số cành trên bó và loại thùng để tạo thùng thủ công
+                    </p>
+                </div>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="packing-products-box">
+                    <h6>
+                        <i class="bi bi-flower1"></i>
+                        Sản phẩm đóng vào thùng này
+                    </h6>
+
+                    <div class="packing-product-list">
+                        {% for item in unpacked_items %}
+                            <div class="packing-product-row">
+
+                                <div>
+                                    <strong>
+                                        {{ item.product_code }} /
+                                        {{ item.product_name }}
+                                    </strong>
+
+                                    <small>
+                                        Cần đóng:
+                                        {{ item.required_quantity }}
+
+                                        |
+
+                                        Đã đóng:
+                                        {{ item.packed_quantity|default:0 }}
+
+                                        |
+
+                                        Còn lại:
+                                        {{ item.remaining_quantity|default:item.required_quantity }}
+                                        {{ item.unit|default:"cành" }}
+                                    </small>
+                                </div>
+
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    max="{{ item.remaining_quantity|default:item.required_quantity }}"
+                                    name="packing_quantity_{{ item.id }}"
+                                    class="form-control packing-qty-input"
+                                    placeholder="Nhập SL đóng">
+
+                                </div>
+                            {% empty %}
+                                <div class="empty-state">
+                                    Không còn sản phẩm cần đóng.
+                                </div>
+                            {% endfor %}
+                    </div>
+                </div>
+
+                <h6 class="modal-section-title">
+                    <i class="bi bi-flower1"></i>
+                    Chọn quy cách bó
+                </h6>
+
+                <div class="packing-rule-grid">
+                    {% for rule in stem_rules %}
+                        <label class="packing-rule-card">
+                            <input type="radio"
+                                   name="stem_rule_id"
+                                   value="{{ rule.id }}"
+                                   data-stems="{{ rule.stems_quantity }}"
+                                   required>
+
+                            <div class="rule-icon">
+                                <i class="bi bi-flower1"></i>
+                            </div>
+
+                            <div>
+                                <strong>{{ rule.name }}</strong>
+                                <small>{{ rule.stems_quantity }} cành/bó</small>
+                            </div>
+                        </label>
+                    {% empty %}
+                        <div class="empty-state">
+                            Chưa có quy cách bó.
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <h6 class="modal-section-title mt-4">
+                    <i class="bi bi-box-seam"></i>
+                    Chọn loại thùng
+                </h6>
+
+                <div class="box-type-grid">
+                    {% for box_type in box_types %}
+                        <label class="box-type-card">
+                            <input type="radio"
+                                   name="box_type_id"
+                                   value="{{ box_type.id }}"
+                                   data-code="{{ box_type.code }}"
+                                   data-capacity="{{ box_type.capacity_index }}"
+                                   required>
+
+                            <strong>{{ box_type.code }}</strong>
+                            <small>Sức chứa: {{ box_type.capacity_index }}</small>
+                            <small>Vỏ: {{ box_type.box_weight }}kg</small>
+                        </label>
+                    {% empty %}
+                        <div class="empty-state">
+                            Chưa có dữ liệu loại thùng.
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div id="boxSuggestionResult" class="box-suggestion-result d-none"></div>
+
+                <div class="packing-note">
+                    <i class="bi bi-info-circle-fill"></i>
+                    Hệ thống sẽ gợi ý loại thùng dựa trên chỉ số đóng thùng.
+                    Nhân viên có thể giữ gợi ý hoặc chọn thùng khác theo thực tế.
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-light"
+                        data-bs-dismiss="modal">
+                    Đóng
+                </button>
+
+                <button type="submit"
+                        class="btn btn-success">
+                    <i class="bi bi-box-seam"></i>
+                    Tạo thùng
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const PACKING_SUGGEST_API = "/production/api/suggest-box/";
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/apps/packing.js' %}"></script>
+{% endblock %}

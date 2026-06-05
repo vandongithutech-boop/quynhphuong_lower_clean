@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sản xuất{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/production.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h4 class="page-title">Sản xuất</h4>
+        <p class="page-subtitle">Tiếp nhận đơn hàng, kiểm tra sản xuất, sơ chế và chuẩn bị đóng gói</p>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Đơn chờ nhận</p>
+                <h3>{{ pending_count }}</h3>
+            </div>
+            <i class="bi bi-inbox"></i>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Lệnh sản xuất</p>
+                <h3>{{ total_orders }}</h3>
+            </div>
+            <i class="bi bi-box-seam"></i>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Đang sản xuất</p>
+                <h3>{{ processing_orders }}</h3>
+            </div>
+            <i class="bi bi-gear-wide-connected"></i>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <p>Hoàn thành</p>
+                <h3>{{ completed_orders }}</h3>
+            </div>
+            <i class="bi bi-check2-circle"></i>
+        </div>
+    </div>
+</div>
+
+<div class="page-card mb-4">
+    <div class="page-card-header">
+        <div>
+            <h5 class="section-title">
+                <i class="bi bi-cart-check"></i>
+                Đơn hàng chờ nhận sản xuất
+            </h5>
+            <p class="section-subtitle">Các đơn hàng mới tạo từ tab Đơn hàng, chưa chuyển sang sản xuất</p>
+        </div>
+
+        <form method="get" class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text"
+                   name="q"
+                   value="{{ q }}"
+                   placeholder="Tìm mã đơn, khách hàng, sản phẩm...">
+        </form>
+    </div>
+
+    <div class="production-list">
+    {% for order in pending_orders %}
+        <div class="production-card pending-card"
+        data-order-code="{{ order.order_code }}"
+        data-order-voice="Có đơn hàng mới. Khách hàng {{ order.customer_name }}. {% for item in order.items.all %} {{ item.product_name }} số lượng {{ item.standard_quantity }}. {% endfor %} Vui lòng chuẩn bị để đóng hàng.">
+
+            <div class="production-card-top">
+                <div class="production-top-left">
+                    <div class="production-code">
+                        {{ order.order_code }}
+                    </div>
+
+                    <div class="production-order-code">
+                        Đơn chờ xuống sản xuất
+                    </div>
+                </div>
+
+                <div class="production-customer-center">
+                    <i class="bi bi-person-heart"></i>
+                    {{ order.customer_name }}
+                </div>
+
+                
+                <div class="production-top-right">
+                    <span>
+                        <i class="bi bi-clock"></i>
+                        {{ order.order_time|date:"d/m/Y H:i" }}
+                    </span>
+
+                    <span>
+                        <i class="bi bi-truck"></i>
+                        {{ order.transport_vehicle|default:"Chưa có xe" }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="production-items">
+                <div class="production-items-head">
+                    <span>Sản phẩm</span>
+                    <span>Tone/Nhóm</span>
+                    <span>SL tiêu chuẩn</span>
+                    <span>SL sale</span>
+                    <span>DVT</span>
+                    <span>Quy cách</span>
+                </div>
+
+                {% for item in order.items.all %}
+                    <div class="production-items-row">
+                        <span class="product-name">
+                            <i class="bi bi-flower1"></i>
+                            {{ item.product_name }}
+                        </span>
+
+                        <span>{{ item.group_name|default:"-" }}</span>
+                        <span class="qty-standard">{{ item.standard_quantity }}</span>
+                        <span class="qty-sale">{{ item.sale_quantity }}</span>
+                        <span>{{ item.unit|default:"-" }}</span>
+                        <span>{{ item.specification|default:"-" }}</span>
+                    </div>
+                {% empty %}
+                    <div class="empty-items">Đơn hàng chưa có sản phẩm</div>
+                {% endfor %}
+            </div>
+
+            <div class="production-actions">
+                <a href="{% url 'production:receive_order' order.id %}" class="receive-btn">
+                    <i class="bi bi-arrow-down-circle-fill"></i>
+                    Nhận sản xuất
+                </a>
+            </div>
+
+        </div>
+    {% empty %}
+        <div class="empty-state">
+            <i class="bi bi-check2-circle"></i>
+            <p>Không còn đơn hàng nào chờ nhận sản xuất</p>
+        </div>
+    {% endfor %}
+</div>
+</div>
+
+<div class="page-card">
+    <div class="page-card-header">
+        <div>
+            <h5 class="section-title">
+                <i class="bi bi-gear-wide-connected"></i>
+                Đơn hàng sản xuất đã nhận
+            </h5>
+            <p class="section-subtitle">Theo dõi tình trạng sản xuất, cảnh báo thiếu hàng và chuẩn bị đóng gói</p>
+        </div>
+        <button type="button" class="voice-toggle-btn" onclick="enableProductionVoice()">
+            <i class="bi bi-volume-up-fill"></i>
+            Bật thông báo giọng đọc
+        </button>
+        <div class="filter-actions">
+            <a href="{% url 'production:production_list' %}"
+               class="filter-btn {% if status == 'all' %}active{% endif %}">
+                Tất cả
+            </a>
+
+            <a href="?status=waiting"
+               class="filter-btn {% if status == 'waiting' %}active{% endif %}">
+                Chờ sản xuất
+            </a>
+
+            <a href="?status=processing"
+               class="filter-btn {% if status == 'processing' %}active{% endif %}">
+                Đang sản xuất
+            </a>
+
+            <a href="?status=packing"
+               class="filter-btn {% if status == 'packing' %}active{% endif %}">
+                Đóng gói
+            </a>
+
+            <a href="?status=completed"
+               class="filter-btn {% if status == 'completed' %}active{% endif %}">
+                Hoàn thành
+            </a>
+        </div>
+    </div>
+    <div class="production-list">
+        {% for production in production_orders %}
+            <div class="production-card">
+
+                <div class="production-card-top">
+                    <div class="production-top-left">
+                        <div class="production-code">
+                            <i class="bi bi-box-seam"></i>
+                            {{ production.production_code }}
+                        </div>
+
+                        <div class="production-meta">
+                            <span>
+                                <i class="bi bi-receipt"></i>
+                                {{ production.order_code }}
+                            </span>
+
+                            <span>
+                                <i class="bi bi-clock"></i>
+                                {{ production.received_at|date:"d/m/Y H:i" }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="production-customer-center">
+                        <i class="bi bi-person-heart"></i>
+                        {{ production.customer_name }}
+                    </div>
+
+                    <div class="production-top-right">
+                        {% if production.status == "waiting" %}
+                            <span class="status-badge status-new">Chờ sản xuất</span>
+                        {% elif production.status == "processing" %}
+                            <span class="status-badge status-processing">Đang sản xuất</span>
+                        {% elif production.status == "packing" %}
+                            <span class="status-badge status-packing">Đóng gói</span>
+                        {% elif production.status == "completed" %}
+                            <span class="status-badge status-completed">Hoàn thành</span>
+                        {% else %}
+                            <span class="status-badge status-cancelled">Đã huỷ</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="production-items">
+                    <div class="production-items-head production-items-head-wide">
+                        <span>Sản phẩm</span>
+                        <span>Tone/Nhóm</span>
+                        <span>Cần</span>
+                        <span>TP có</span>
+                        <span>Thiếu</span>
+                        <span>NL có</span>
+                        <span>Cần sơ chế</span>
+                    </div>
+
+                    {% for item in production.items.all %}
+                        <div class="production-items-row production-items-row-wide">
+                            <span class="product-name">
+                                <i class="bi bi-flower1"></i>
+                                {{ item.product_name }}
+                            </span>
+
+                            <span>{{ item.group_name|default:"-" }}</span>
+                            <span class="qty-standard">{{ item.required_quantity }}</span>
+                            <span>{{ item.finished_available }}</span>
+
+                            <span class="{% if item.missing_quantity > 0 %}danger-text{% endif %}">
+                                {{ item.missing_quantity }}
+                            </span>
+
+                            <span>{{ item.raw_available }}</span>
+
+                            <span class="{% if item.need_processing_quantity > 0 %}warning-pill{% endif %}">
+                                {{ item.need_processing_quantity }}
+                            </span>
+                        </div>
+
+                        {% if item.warning_note %}
+                            <div class="production-warning">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                {{ item.warning_note }}
+                            </div>
+                        {% endif %}
+                    {% empty %}
+                        <div class="empty-items">Lệnh sản xuất chưa có sản phẩm</div>
+                    {% endfor %}
+                </div>
+
+                <div class="production-actions">
+                    {% if production.status == "waiting" %}
+                        <a href="{% url 'production:update_status' production.id 'processing' %}"
+                           class="production-btn start">
+                            <i class="bi bi-play-fill"></i>
+                            Bắt đầu sản xuất
+                        </a>
+                    {% endif %}
+
+                    {% if production.status == "processing" %}
+                        <a href="{% url 'production:packing_detail' production.id %}"
+                           class="production-btn packing">
+                            <i class="bi bi-box2-heart"></i>
+                            Đóng gói
+                        </a>
+                    {% endif %}
+
+                    {% if production.status == "packing" %}
+                        <a href="{% url 'production:packing_detail' production.id %}"
+                           class="production-btn packing">
+                            <i class="bi bi-journal-text"></i>
+                            Xem đóng gói
+                        </a>
+
+                        <a href="{% url 'production:reset_packing' production.id %}"
+                           class="production-btn edit-packing"
+                           onclick="return confirm('Mở lại đóng gói cho {{ production.production_code }}? Tất cả thùng cũ sẽ bị xóa để đóng lại.')">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                            Sửa đóng gói
+                        </a>
+
+                        <a href="{% url 'production:update_status' production.id 'completed' %}"
+                           class="production-btn complete">
+                            <i class="bi bi-check-circle"></i>
+                            Hoàn thành
+                        </a>
+                    {% endif %}
+
+                    {% if production.status == "completed" %}
+                        <a href="{% url 'production:packing_detail' production.id %}"
+                           class="production-btn packing">
+                            <i class="bi bi-journal-text"></i>
+                            Xem đóng gói
+                        </a>
+
+                        <a href="{% url 'production:reset_packing' production.id %}"
+                           class="production-btn edit-packing"
+                           onclick="return confirm('Mở lại đóng gói cho {{ production.production_code }}? Trạng thái sẽ quay về đóng gói và tất cả thùng cũ sẽ bị xóa.')">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                            Sửa đóng gói
+                        </a>
+                    {% endif %}
+
+                    {% if production.status != "completed" and production.status != "cancelled" %}
+                        <a href="{% url 'production:update_status' production.id 'cancelled' %}"
+                           class="production-btn cancel">
+                            <i class="bi bi-x-circle"></i>
+                            Huỷ
+                        </a>
+                    {% endif %}
+                </div>
+
+            </div>
+        {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>Chưa có lệnh sản xuất nào</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<script>
+    const PRODUCTION_VOICE_API = "{% url 'production:pending_orders_voice_api' %}";
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/apps/production.js' %}"></script>
+{% endblock %}

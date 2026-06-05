@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Kho nguyên liệu{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/inventory-raw-dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-card">
+
+    <div class="page-card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="mb-1">Kho Nguyên Liệu</h4>
+            <p class="text-muted mb-0">
+                Quản lý hoa mới nhập, tồn kho và cảnh báo tồn lâu
+            </p>
+        </div>
+
+        <a href="{% url 'inventory:dashboard' %}" class="btn btn-outline-success">
+            <i class="bi bi-arrow-left"></i> Kho tổng
+        </a>
+    </div>
+
+    <div class="page-card-body">
+
+        <div class="row g-3 mt-3 mb-4">
+
+            <div class="col-md-3">
+                <a href="?filter=all" class="text-decoration-none">
+                    <div class="stat-card stat-total {% if current_filter == 'all' %}active{% endif %}">
+                        <span>Tổng nguyên liệu</span>
+                        <strong>{{ total_all|floatformat:0 }}</strong>
+                        <div class="summary-note">Tổng số lượng</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-3">
+                <a href="?filter=new" class="text-decoration-none">
+                    <div class="stat-card stat-new {% if current_filter == 'new' %}active{% endif %}">
+                        <span>Mới nhập hôm nay</span>
+                        <strong>{{ total_new|floatformat:0 }}</strong>
+                        <div class="summary-note">Hoa mới nhập vào kho</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-3">
+                <a href="?filter=process" class="text-decoration-none">
+                    <div class="stat-card stat-process {% if current_filter == 'process' %}active{% endif %}">
+                        <span>Cần sơ chế</span>
+                        <strong>{{ total_processing|floatformat:0 }}</strong>
+                        <div class="summary-note">Nhập trước hôm nay</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-3">
+                <a href="?filter=warning" class="text-decoration-none">
+                    <div class="stat-card stat-warning {% if current_filter == 'warning' %}active{% endif %}">
+                        <span>Cảnh báo tồn lâu</span>
+                        <strong>{{ total_warning|floatformat:0 }}</strong>
+                        <div class="summary-note">Tồn từ 2 ngày trở lên</div>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="page-card mb-4">
+
+        <div class="page-card-header d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0">Tổng số lượng từng loại hoa</h5>
+            </div>
+        </div>
+
+        <div class="page-card-body">
+
+            <div class="raw-card-list">
+
+                {% for row in flower_rows %}
+                <div class="raw-row-card">
+
+                    <div class="raw-index">
+                        {{ forloop.counter }}
+                    </div>
+
+                    <div class="raw-product">
+                        <div class="flower-name">{{ row.product_name }}</div>
+                        <div class="flower-code">{{ row.product_code }}</div>
+                    </div>
+
+                    <div class="raw-info">
+                        <span>Tồn kho nguyên liệu</span>
+                        <strong class="text-success">{{ row.total_qty|floatformat:0 }}</strong>
+                    </div>
+
+                    <div class="raw-info">
+                        <span>Mới nhập</span>
+                        <strong class="text-primary">{{ row.new_qty|floatformat:0 }}</strong>
+                    </div>
+
+                    <div class="raw-info">
+                        <span>Cần sơ chế</span>
+                        <strong class="text-warning">{{ row.processing_qty|floatformat:0 }}</strong>
+                    </div>
+
+                    <div class="raw-info">
+                        <span>Cảnh báo</span>
+                        <strong class="{% if row.warning_qty > 0 %}text-danger{% else %}text-muted{% endif %}">
+                            {{ row.warning_qty|floatformat:0 }}
+                        </strong>
+                    </div>
+
+                    <div class="raw-info">
+                        <span>Đơn vị</span>
+                        <strong>{{ row.unit|default:"-" }}</strong>
+                    </div>
+
+                    <div class="raw-supplier">
+                        <span>NCC</span>
+                        <strong>{{ row.supplier_name }}</strong>
+                    </div>
+
+                    <div class="raw-date">
+                        <span>Ngày nhập gần nhất</span>
+                        <strong>{{ row.latest_date|date:"d/m/Y" }}</strong>
+                    </div>
+
+                    <div class="raw-status">
+                        <span>Tồn lâu nhất</span>
+
+                        {% if row.oldest_days >= 2 %}
+                            <strong class="status-danger">{{ row.oldest_days }} ngày</strong>
+                        {% elif row.oldest_days == 1 %}
+                            <strong class="status-warning">{{ row.oldest_days }} ngày</strong>
+                        {% else %}
+                            <strong class="status-success">0 ngày</strong>
+                        {% endif %}
+                    </div>
+
+                </div>
+                {% empty %}
+                <div class="text-center text-muted py-5">
+                    Chưa có dữ liệu kho nguyên liệu
+                </div>
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    </div>
+
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,370 @@
+/* =========================================================
+   LIQUID GLASS MODAL - APPLE STYLE
+========================================================= */
+
+.modal {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    overflow-y: auto !important;
+}
+
+.modal-backdrop {
+    background:
+        radial-gradient(circle at 20% 10%, rgba(187, 247, 208, .22), transparent 32%),
+        radial-gradient(circle at 90% 20%, rgba(219, 234, 254, .22), transparent 34%),
+        rgba(15, 23, 42, .42);
+}
+
+.modal-backdrop.show {
+    opacity: 1;
+}
+
+.modal-dialog {
+    transform: scale(.96) translateY(14px);
+    transition:
+        transform .28s cubic-bezier(.2, .9, .2, 1),
+        opacity .28s ease;
+
+    margin: 20px auto;
+    max-height: calc(100vh - 40px);
+}
+
+.modal.show .modal-dialog {
+    transform: scale(1) translateY(0);
+}
+
+.modal-content {
+    position: relative;
+
+    border-radius: 32px;
+    border: 1px solid rgba(255, 255, 255, .68);
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.50));
+    backdrop-filter: blur(34px) saturate(185%);
+    -webkit-backdrop-filter: blur(34px) saturate(185%);
+    box-shadow:
+        0 34px 90px rgba(15, 23, 42, .28),
+        inset 0 1px 0 rgba(255,255,255,.88),
+        inset 0 -1px 0 rgba(255,255,255,.26);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 40px);
+    overflow: hidden;
+}
+
+.modal-content::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 31px;
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.92), transparent 30%),
+        radial-gradient(circle at 90% 18%, rgba(187,247,208,.30), transparent 30%),
+        radial-gradient(circle at 35% 100%, rgba(219,234,254,.22), transparent 36%);
+}
+
+.modal-content > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* HEADER */
+
+.modal-header {
+    padding: 22px 26px;
+    border-bottom: 1px solid rgba(255,255,255,.58);
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.64), rgba(255,255,255,.34));
+
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+
+    flex-shrink: 0;
+}
+
+.modal-title {
+    font-weight: 950;
+    color: #0f172a;
+    letter-spacing: -.02em;
+}
+
+.modal-subtitle,
+.modal-header .small,
+.modal-header small {
+    margin-top: 4px;
+    color: #64748b;
+    font-weight: 650;
+}
+
+/* BODY */
+
+.modal-body {
+    padding: 24px 26px;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.32), rgba(255,255,255,.16));
+
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+/* FOOTER */
+
+.modal-footer {
+    padding: 18px 26px;
+    border-top: 1px solid rgba(255,255,255,.58);
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,.28));
+
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+
+    flex-shrink: 0;
+}
+
+/* CLOSE BUTTON */
+
+.btn-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+
+    background-color: rgba(255,255,255,.62);
+    border: 1px solid rgba(226,232,240,.9);
+
+    opacity: 1;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.9),
+        0 8px 18px rgba(15,23,42,.08);
+
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        box-shadow .18s ease;
+}
+
+.btn-close:hover {
+    transform: rotate(90deg) scale(1.04);
+    background-color: rgba(254,226,226,.88);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.9),
+        0 10px 22px rgba(220,38,38,.12);
+}
+
+/* BUTTONS INSIDE MODAL */
+
+.modal-content .btn {
+    border-radius: 16px;
+    font-weight: 850;
+    padding: 9px 15px;
+}
+
+.modal-content .btn-success {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    border: none;
+
+    box-shadow:
+        0 12px 26px rgba(22,163,74,.24),
+        inset 0 1px 0 rgba(255,255,255,.26);
+}
+
+.modal-content .btn-success:hover {
+    filter: brightness(.98);
+    transform: translateY(-1px);
+}
+
+.modal-content .btn-light {
+    background: rgba(255,255,255,.66);
+    border: 1px solid rgba(226,232,240,.95);
+    color: #334155;
+}
+
+.modal-content .btn-light:hover {
+    background: rgba(255,255,255,.92);
+}
+
+/* SPECIAL: NESTED / SUB MODAL */
+
+.sub-modal-content {
+    border-radius: 28px;
+}
+
+/* ===================================
+   ORDER INPUT CARD STYLE
+=================================== */
+
+.order-item-row .form-control,
+.order-item-row .form-select,
+.order-item-row .quantity-btn,
+.order-item-row .flower-type-btn {
+    height: 44px;
+    border: 1.5px solid #86efac;
+    border-radius: 16px;
+    background: #ffffff;
+    font-weight: 700;
+    color: #1f2937;
+    transition: all .2s ease;
+}
+
+.order-item-row .form-control:hover,
+.order-item-row .form-select:hover,
+.order-item-row .quantity-btn:hover,
+.order-item-row .flower-type-btn:hover {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 4px rgba(34,197,94,.08);
+}
+
+.order-item-row .form-control:focus,
+.order-item-row .form-select:focus {
+    border-color: #16a34a;
+    box-shadow: 0 0 0 4px rgba(34,197,94,.12);
+}
+
+/* DVT + Tone/Nhóm readonly */
+
+.order-item-row .readonly-field {
+    background: #f8fafc;
+    border: 1.5px solid #86efac;
+    color: #475569;
+    font-weight: 700;
+}
+
+/* =========================================================
+   GLOBAL MODAL INNER UI - ĐỒNG BỘ TẤT CẢ MODAL
+========================================================= */
+
+.modal-content .modal-body {
+    background:
+        radial-gradient(circle at 88% 8%, rgba(187,247,208,.22), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,.42), rgba(248,250,252,.22)) !important;
+}
+
+.modal-content .form-label {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 850;
+    margin-bottom: 7px;
+}
+
+.modal-content .form-control,
+.modal-content .form-select,
+.modal-content input[type="text"],
+.modal-content input[type="number"],
+.modal-content input[type="date"],
+.modal-content textarea,
+.modal-content select {
+    border: 1.5px solid rgba(134,239,172,.85) !important;
+    border-radius: 16px !important;
+    background: rgba(255,255,255,.82) !important;
+    min-height: 44px;
+    font-weight: 750 !important;
+    color: #0f172a;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.84);
+}
+
+.modal-content .form-control:focus,
+.modal-content .form-select:focus,
+.modal-content input:focus,
+.modal-content textarea:focus,
+.modal-content select:focus {
+    border-color: #16a34a !important;
+    background: rgba(255,255,255,.92) !important;
+    box-shadow: 
+        0 0 0 4px rgba(22,163,74,.13) !important,
+        inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+
+.modal-content .input-group .btn,
+.modal-content .btn-outline-secondary {
+    border-radius: 14px !important;
+    font-weight: 850;
+}
+
+.modal-content .modal-section,
+.modal-content .receipt-form-box,
+.modal-content .inventory-form-box,
+.modal-content .order-item-row,
+.modal-content .processing-product-form {
+    border: 1px solid rgba(226,232,240,.9) !important;
+    border-radius: 24px !important;
+    background: rgba(255,255,255,.62) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.85) !important;
+}
+
+.modal-content .btn-success {
+    border-radius: 18px !important;
+    font-weight: 900 !important;
+}
+
+.modal-content .btn-light {
+    border-radius: 18px !important;
+    font-weight: 850 !important;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+    .modal-dialog {
+        margin: 12px;
+        max-height: calc(100vh - 24px);
+    }
+
+    .modal-content {
+        border-radius: 26px;
+        max-height: calc(100vh - 24px);
+    }
+
+    .modal-content::before {
+        border-radius: 25px;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+}
+
+
+#packingSetupModal .modal-dialog{
+    max-width:1200px;
+    width:95%;
+}
+
+#packingSetupModal .modal-body{
+    max-height:70vh;
+    overflow-y:auto;
+}
+
+#packingSetupModal .modal-content{
+    overflow:hidden;
+}
+
+#packingSetupModal .modal-footer{
+    position:sticky;
+    bottom:0;
+    z-index:20;
+    background:#fff;
+}
+
+.packing-rule-grid{
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fit,minmax(180px,1fr));
+    gap:14px;
+}
+
+.box-type-grid{
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fit,minmax(170px,1fr));
+    gap:12px;
+}

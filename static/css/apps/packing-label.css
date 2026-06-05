@@ -1,0 +1,261 @@
+@page {
+    size: 250mm 140mm;
+    margin: 0;
+}
+
+.label-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.print-label-btn,
+.back-btn {
+    border: none;
+    text-decoration: none;
+    border-radius: 14px;
+    padding: 10px 18px;
+    font-weight: 900;
+    font-size: 14px;
+}
+
+.print-label-btn {
+    background: #16a34a;
+    color: #fff;
+}
+
+.back-btn {
+    background: #f1f5f9;
+    color: #1f2937;
+}
+
+.label-print-area {
+    display: grid;
+    gap: 18px;
+    justify-content: center;
+}
+
+.box-label {
+    width: 150mm;
+    height: 100mm;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    box-sizing: border-box;
+    padding: 3mm;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    page-break-after: always;
+}
+
+.label-header {
+    height: 24mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.label-company {
+    display: flex;
+    align-items: flex-start;
+    gap: 4mm;
+}
+
+.label-logo {
+    width: 14mm;
+    height: 14mm;
+    object-fit: contain;
+}
+
+.company-text {
+    display: flex;
+    flex-direction: column;
+    font-size: 8px;
+    line-height: 1.15;
+    margin-left: -6mm;
+}
+
+.company-text strong {
+    font-size: 13px;
+    margin-bottom: 1px;
+}
+
+.label-meta {
+    display: flex;
+    align-items: flex-start;
+    gap: 6mm;
+}
+
+.label-date {
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.label-qr {
+    width: 25mm;
+    height: 25mm;
+    object-fit: contain;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+}
+
+.label-customer-code {
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.label-box-code {
+    width: 22mm;
+    height: 13mm;
+    background: #c6efce;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 900;
+    flex-shrink: 0;
+}
+
+.box-code-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2mm;
+}
+
+.label-client {
+    margin-top: -10mm;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 42mm);
+    margin-left: 18mm;
+}
+
+.client-title {
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.client-name {
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    white-space: normal;
+    word-break: break-word;
+    max-width: 100%;
+    text-align: center;
+}
+
+.client-country {
+    font-size: 13px;
+    font-weight: 900;
+    margin-top: 2mm;
+}
+
+.label-products {
+    margin-top: 4mm;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3mm;
+}
+
+.label-products table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.label-products th {
+    background: #dbe5f1;
+    border: 1px solid #cbd5e1;
+    font-size: 11px;
+    height: 5mm;
+    text-align: center;
+    font-weight: 900;
+}
+
+.label-products td {
+    border: 1px solid #d1d5db;
+    height: 6mm;
+    font-size: 11px;
+    padding: 1px 3px;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+.label-products td:first-child,
+.label-products td:last-child {
+    text-align: center;
+}
+
+.stt-col {
+    width: 9mm;
+}
+
+.sl-col {
+    width: 12mm;
+}
+
+@media print {
+    @page {
+        size: 150mm 100mm;
+        margin: 0;
+    }
+
+    .sidebar,
+    .app-sidebar,
+    .topbar,
+    .navbar,
+    .header,
+    .label-toolbar {
+        display: none !important;
+    }
+
+    html,
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+    }
+
+    .app-content {
+        margin-left: 0 !important;
+    }
+
+    .main-content,
+    .content-wrapper,
+    .page-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: auto !important;
+        max-width: none !important;
+    }
+
+    .label-print-area {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .box-label {
+        width: 150mm !important;
+        height: 100mm !important;
+        margin: 0 !important;
+        padding: 3mm !important;
+        border: none !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+        page-break-after: always;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: geometricPrecision;
+    }
+}

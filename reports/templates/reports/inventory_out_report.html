@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Báo cáo tồn kho{% endblock %}
+{% block page_title %}Báo cáo tồn kho hiện tại{% endblock %}
+{% block page_subtitle %}Tồn kho hiện tại theo từng sản phẩm và từng kho{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/report.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-card">
+    <div class="page-card-header">
+        <div>
+            <h4 class="mb-1">Báo cáo xuất kho</h4>
+            <p class="text-muted mb-0">Dữ liệu lấy từ lịch sử giao dịch xuất kho.</p>
+        </div>
+
+        <form method="get" class="d-flex gap-2 flex-wrap">
+            <input type="date" name="from_date" value="{{ from_date|date:'Y-m-d' }}" class="form-control">
+            <input type="date" name="to_date" value="{{ to_date|date:'Y-m-d' }}" class="form-control">
+            <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Mã phiếu / mã SP / tên SP...">
+
+            <select name="warehouse" class="form-select">
+                <option value="">Tất cả kho</option>
+                {% for value, label in warehouse_choices %}
+                    <option value="{{ value }}" {% if warehouse == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="group" class="form-select">
+                <option value="">Tất cả nhóm</option>
+                {% for value, label in product_group_choices %}
+                    <option value="{{ value }}" {% if group == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+
+            <button class="btn btn-success">
+                <i class="bi bi-search"></i> Lọc
+            </button>
+        </form>
+    </div>
+
+    <div class="page-card-body">
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="summary-card">
+                    <div class="summary-title">Tổng xuất</div>
+                    <div class="summary-value">{{ total_quantity|floatformat:0 }}</div>
+                    <div class="summary-note">Trong khoảng ngày đã chọn</div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="summary-card">
+                    <div class="summary-title">Số giao dịch</div>
+                    <div class="summary-value">{{ total_transaction_count }}</div>
+                    <div class="summary-note">Dòng lịch sử xuất kho</div>
+                </div>
+            </div>
+        </div>
+
+        <h6 class="fw-bold mb-3">Top sản phẩm xuất nhiều</h6>
+        <div class="row g-2 mb-4">
+            {% for item in top_products %}
+                <div class="col-md-4">
+                    <div class="summary-card">
+                        <div class="summary-title">{{ item.product_code|default:"-" }}</div>
+                        <div class="summary-value">{{ item.total_quantity|floatformat:0 }}</div>
+                        <div class="summary-note">{{ item.product_name|default:"-" }}</div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="text-muted">Chưa có dữ liệu top sản phẩm.</div>
+            {% endfor %}
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+                <thead class="table-danger">
+                    <tr>
+                        <th>Ngày</th>
+                        <th>Mã phiếu</th>
+                        <th>Kho</th>
+                        <th>Nhóm</th>
+                        <th>Mã SP</th>
+                        <th>Tên sản phẩm</th>
+                        <th>ĐVT</th>
+                        <th>Độ / loại</th>
+                        <th class="text-end">Số lượng</th>
+                        <th>NCC</th>
+                        <th>Ghi chú</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in transactions %}
+                        <tr>
+                            <td>{{ item.created_at|date:"d/m/Y H:i" }}</td>
+                            <td class="fw-bold">{{ item.reference_code|default:"-" }}</td>
+                            <td>{{ item.get_warehouse_type_display }}</td>
+                            <td>{{ item.get_product_group_display }}</td>
+                            <td>{{ item.product_code|default:"-" }}</td>
+                            <td>{{ item.product_name|default:"-" }}</td>
+                            <td>{{ item.unit|default:"-" }}</td>
+                            <td>{{ item.flower_grade|default:"-" }}</td>
+                            <td class="text-end fw-bold text-danger">{{ item.quantity|floatformat:0|cut:"-" }}</td>
+                            <td>{{ item.supplier_name|default:"-" }}</td>
+                            <td>{{ item.note|default:"-" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="11" class="text-center text-muted py-4">Không có dữ liệu xuất kho</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

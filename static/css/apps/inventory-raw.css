@@ -1,0 +1,138 @@
+.raw-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.raw-row-card {
+    display: grid;
+    grid-template-columns: 44px minmax(220px, 1.8fr) repeat(5, minmax(85px, 1fr)) minmax(160px, 1.3fr) minmax(135px, 1fr) minmax(120px, 1fr);
+    align-items: center;
+    gap: 12px;
+    background: #ffffff;
+    border: 1px solid #edf0f3;
+    border-radius: 18px;
+    padding: 14px 16px;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+    transition: 0.2s ease;
+}
+
+.raw-row-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    border-color: #d7eadf;
+}
+
+.raw-index {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 13px;
+}
+
+.flower-name {
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.25;
+}
+
+.flower-code {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.raw-info,
+.raw-supplier,
+.raw-date,
+.raw-status {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.raw-info span,
+.raw-supplier span,
+.raw-date span,
+.raw-status span {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.raw-info strong {
+    font-size: 17px;
+    font-weight: 900;
+}
+
+.raw-supplier strong,
+.raw-date strong {
+    font-size: 13px;
+    font-weight: 800;
+    color: #087f3f;
+    background: #e8f7ee;
+    padding: 6px 10px;
+    border-radius: 999px;
+    width: fit-content;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.raw-status strong {
+    font-size: 13px;
+    font-weight: 800;
+    padding: 6px 10px;
+    border-radius: 999px;
+    width: fit-content;
+}
+
+.status-success {
+    background: #e8f7ee;
+    color: #087f3f;
+}
+
+.status-warning {
+    background: #fff3cd;
+    color: #b58100;
+}
+
+.status-danger {
+    background: #fde2e1;
+    color: #dc3545;
+}
+
+@media (max-width: 1400px) {
+    .raw-row-card {
+        grid-template-columns: 44px minmax(220px, 2fr) repeat(5, minmax(85px, 1fr));
+    }
+
+    .raw-supplier,
+    .raw-date,
+    .raw-status {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .raw-row-card {
+        grid-template-columns: 40px 1fr;
+    }
+
+    .raw-info,
+    .raw-supplier,
+    .raw-date,
+    .raw-status {
+        grid-column: 2;
+    }
+}

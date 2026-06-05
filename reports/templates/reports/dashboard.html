@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Báo cáo{% endblock %}
+{% block page_title %}Báo cáo{% endblock %}
+{% block page_subtitle %}Trung tâm báo cáo tổng hợp toàn hệ thống{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/apps/report.css' %}">
+<link rel="stylesheet" href="{% static 'css/apps/layout.css' %}">
+<link rel="stylesheet" href="{% static 'css/apps/sidebar.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-card">
+
+    <div class="page-card-header">
+        <div>
+            <h4 class="mb-1">Trung tâm báo cáo</h4>
+            <p class="text-muted mb-0">
+                Quản lý báo cáo tồn kho, nhập xuất, đơn hàng, sản xuất, sơ chế,
+                logistics và doanh thu.
+            </p>
+        </div>
+    </div>
+
+    <div class="page-card-body">
+
+        <div class="row g-3">
+
+            <div class="col-md-3">
+                <a href="{% url 'reports:inventory_current_report' %}" class="report-module-card">
+                    <div class="report-module-icon bg-success-subtle text-success">
+                        <i class="bi bi-boxes"></i>
+                    </div>
+
+                    <div>
+                        <h5>Tồn kho</h5>
+                        <p>Xem tồn kho hiện tại theo từng sản phẩm và từng kho.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-3">
+                <a href="{% url 'reports:inventory_in_report' %}" class="report-module-card">
+                    <div class="report-module-icon bg-primary-subtle text-primary">
+                        <i class="bi bi-box-arrow-in-down"></i>
+                    </div>
+
+                    <div>
+                        <h5>Nhập kho</h5>
+                        <p>Lọc dữ liệu nhập kho theo ngày, sản phẩm và kho.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-3">
+                <a href="{% url 'reports:inventory_out_report' %}" class="report-module-card">
+                    <div class="report-module-icon bg-danger-subtle text-danger">
+                        <i class="bi bi-box-arrow-up"></i>
+                    </div>
+
+                    <div>
+                        <h5>Xuất kho</h5>
+                        <p>Lọc dữ liệu xuất kho theo ngày, sản phẩm và kho.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-3">
+                <a href="#" class="report-module-card report-disabled">
+                    <div class="report-module-icon bg-warning-subtle text-warning">
+                        <i class="bi bi-cart-check"></i>
+                    </div>
+
+                    <div>
+                        <h5>Đơn hàng</h5>
+                        <p>Số đơn, khách hàng, sản phẩm bán chạy và trạng thái đơn.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-3">
+                <a href="#" class="report-module-card report-disabled">
+                    <div class="report-module-icon bg-info-subtle text-info">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+
+                    <div>
+                        <h5>Sản xuất</h5>
+                        <p>Số thùng, số cành, tiến độ sản xuất và đóng gói.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-3">
+                <a href="#" class="report-module-card report-disabled">
+                    <div class="report-module-icon bg-secondary-subtle text-secondary">
+                        <i class="bi bi-scissors"></i>
+                    </div>
+
+                    <div>
+                        <h5>Sơ chế</h5>
+                        <p>Thành phẩm, hao hụt, bù số lượng và hiệu suất sơ chế.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-3">
+                <a href="#" class="report-module-card report-disabled">
+                    <div class="report-module-icon bg-success-subtle text-success">
+                        <i class="bi bi-truck"></i>
+                    </div>
+
+                    <div>
+                        <h5>Logistics</h5>
+                        <p>Chuyến xe, tài xế, nhà cung cấp và tình trạng vận chuyển.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-3">
+                <a href="#" class="report-module-card report-disabled">
+                    <div class="report-module-icon bg-dark-subtle text-dark">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+
+                    <div>
+                        <h5>Doanh thu</h5>
+                        <p>Doanh thu, công nợ, chi phí và lợi nhuận tạm tính.</p>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+
+{% block title %}Khách hàng{% endblock %}
+{% block page_title %}Quản lý khách hàng{% endblock %}
+{% block page_subtitle %}Danh sách khách hàng và nhà cung cấp trong hệ thống{% endblock %}
+
+{% block content %}
+
+<div class="page-card">
+
+    <!-- HEADER -->
+
+    <div class="page-card-header">
+
+        <div>
+            <h3 class="page-card-title">
+                Danh sách khách hàng
+            </h3>
+
+            <div class="mt-2">
+                <span class="status-pill">
+                    <i class="bi bi-people"></i>
+                    Tổng số: {{ total_customers }} dữ liệu
+                </span>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+
+            <a href="{% url 'categories:customer_list' %}"
+               class="btn {% if not filter_type and not keyword %}btn-success{% else %}btn-outline-success{% endif %}">
+                Tất cả
+            </a>
+
+            <a href="{% url 'categories:customer_list' %}?type=KH{% if keyword %}&q={{ keyword }}{% endif %}"
+               class="btn {% if filter_type == 'KH' %}btn-success{% else %}btn-outline-success{% endif %}">
+                Khách hàng
+            </a>
+
+            <a href="{% url 'categories:customer_list' %}?type=NCC{% if keyword %}&q={{ keyword }}{% endif %}"
+               class="btn {% if filter_type == 'NCC' %}btn-success{% else %}btn-outline-success{% endif %}">
+                Nhà CC
+            </a>
+
+            <a href="{% url 'categories:customer_create' %}"
+               class="btn btn-warning">
+                <i class="bi bi-plus-circle"></i>
+                Thêm khách hàng
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- BODY -->
+
+    <div class="page-card-body">
+
+        <!-- SEARCH -->
+
+        <form method="get" class="filter-bar mb-4">
+
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ keyword }}"
+                    class="form-control"
+                    placeholder="Tìm theo tên khách hàng..."
+                    list="customerSuggestions"
+                    autocomplete="off"
+                >
+            </div>
+
+            <datalist id="customerSuggestions">
+                {% for customer in suggestion_customers %}
+                    <option value="{{ customer.ten_khach_hang }}">
+                        {{ customer.ma_kh }} |
+                        {{ customer.sdt|default:"" }} |
+                        {{ customer.vung|default:"" }} |
+                        {{ customer.country|default:"" }}
+                    </option>
+                {% endfor %}
+            </datalist>
+
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-search"></i>
+                Tìm kiếm
+            </button>
+
+            {% if keyword %}
+            <a href="{% url 'categories:customer_list' %}"
+               class="btn btn-outline-secondary">
+                Xóa tìm
+            </a>
+            {% endif %}
+
+        </form>
+
+        <!-- LIST -->
+
+        <div class="data-list">
+
+            {% for customer in customers %}
+
+            <div class="data-item">
+
+                <!-- LEFT -->
+
+                <div>
+
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+
+                        <span class="status-pill">
+                            {{ customer.ma_kh|default:"NO CODE" }}
+                        </span>
+
+                        {% if customer.ma_kh|slice:":2" == "KH" %}
+                            <span class="badge bg-success-subtle text-success border">
+                                Khách hàng
+                            </span>
+                        {% elif customer.ma_kh|slice:":3" == "NCC" %}
+                            <span class="badge bg-warning-subtle text-dark border">
+                                Nhà CC
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                    <div class="item-title">
+                        {{ customer.ten_khach_hang|default:"Chưa có dữ liệu" }}
+                    </div>
+
+                    <div class="item-sub mt-1">
+
+                        {% if customer.dia_chi %}
+                            <i class="bi bi-geo-alt"></i>
+                            {{ customer.dia_chi }}
+                        {% else %}
+                            <span class="empty-data">
+                                chưa có địa chỉ
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                <!-- INFO 1 -->
+
+                <div>
+
+                    <div class="info-label">
+                        Số điện thoại
+                    </div>
+
+                    <div class="info-value">
+                        {% if customer.sdt %}
+                            {{ customer.sdt }}
+                        {% else %}
+                            <span class="empty-data">
+                                chưa có dữ liệu
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="info-label mt-3">
+                        Vận chuyển
+                    </div>
+
+                    <div class="info-value">
+                        {% if customer.van_chuyen %}
+                            {{ customer.van_chuyen }}
+                        {% else %}
+                            <span class="empty-data">
+                                chưa có dữ liệu
+                            </span>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <!-- INFO 2 -->
+
+                <div>
+
+                    <div class="info-label">
+                        Quốc gia / Vùng
+                    </div>
+
+                    <div class="info-value">
+                        {% if customer.country %}
+                            {{ customer.country }}
+                        {% else %}
+                            <span class="empty-data">
+                                chưa có dữ liệu
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-1 text-muted small">
+                        {% if customer.vung %}
+                            {{ customer.vung }}
+                        {% endif %}
+                    </div>
+
+                    <div class="info-label mt-3">
+                        Mã số thuế
+                    </div>
+
+                    <div class="info-value">
+                        {% if customer.ma_so_thue %}
+                            {{ customer.ma_so_thue }}
+                        {% else %}
+                            <span class="empty-data">
+                                chưa có dữ liệu
+                            </span>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <!-- ACTION -->
+
+                <div class="action-group">
+
+                    <a href="{% url 'categories:customer_update' customer.id %}"
+                       class="icon-btn"
+                       title="Sửa khách hàng">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+
+                    <a href="{% url 'categories:customer_delete' customer.id %}"
+                       class="icon-btn"
+                       title="Xóa khách hàng"
+                       onclick="return confirm('Bạn có chắc chắn muốn xóa khách hàng này?')">
+                        <i class="bi bi-trash"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="text-center py-5">
+
+                <div class="mb-3">
+                    <i class="empty-icon bi bi-people"></i>
+                </div>
+
+                <h5 class="fw-bold">
+                    Chưa có dữ liệu khách hàng
+                </h5>
+
+                <div class="text-muted mb-4">
+                    Hệ thống hiện chưa có khách hàng hoặc nhà cung cấp nào.
+                </div>
+
+                <a href="{% url 'categories:customer_create' %}"
+                   class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i>
+                    Thêm khách hàng đầu tiên
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Truy xuất lô {{ lot.lot_code }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body">
+            <h3 class="fw-bold text-success mb-2">Truy xuất nguồn gốc</h3>
+            <div class="text-muted">Mã lô: {{ lot.lot_code }}</div>
+            {% if lot.qr_code %}
+                <div class="mt-3">
+                    <img src="{{ lot.qr_code.url }}" 
+                        alt="QR {{ lot.lot_code }}" 
+                        style="width: 140px; height: 140px; object-fit: contain;">
+                </div>
+            {% else %}
+                <div class="text-muted mt-3">Chưa có QR code</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3">Thông tin lô hàng</h5>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="text-muted small">Sản phẩm</div>
+                    <div class="fw-semibold">{{ lot.product_name }}</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted small">Mã sản phẩm</div>
+                    <div class="fw-semibold">{{ lot.product_code }}</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted small">Số lượng nhập</div>
+                    <div class="fw-semibold">{{ lot.received_quantity }} {{ lot.unit }}</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted small">Nhà cung cấp</div>
+                    <div class="fw-semibold">{{ lot.supplier_name|default:"Chưa có dữ liệu" }}</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted small">Ngày nhập</div>
+                    <div class="fw-semibold">{{ lot.received_date|date:"d/m/Y" }}</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted small">Giờ nhập</div>
+                    <div class="fw-semibold">{{ lot.received_time|default:"Chưa có dữ liệu" }}</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted small">Hình thức giao nhận</div>
+                    <div class="fw-semibold">{{ lot.get_delivery_type_display|default:"Chưa có dữ liệu" }}</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted small">Người giao</div>
+                    <div class="fw-semibold">{{ lot.delivered_by|default:"Chưa có dữ liệu" }}</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted small">Người đi lấy</div>
+                    <div class="fw-semibold">{{ lot.picked_by|default:"Chưa có dữ liệu" }}</div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="text-muted small">Ghi chú</div>
+                    <div class="fw-semibold">{{ lot.note|default:"Chưa có dữ liệu" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3">Lịch sử di chuyển</h5>
+
+            {% if logs %}
+                <div class="list-group">
+                    {% for log in logs %}
+                    <div class="list-group-item border-0 border-bottom py-3">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div class="fw-bold text-success">
+                                    {{ log.get_action_display }}
+                                </div>
+                                <div class="small text-muted">
+                                    {{ log.from_area|default:"-" }} → {{ log.to_area|default:"-" }}
+                                </div>
+                                <div class="small">
+                                    Số lượng: <strong>{{ log.quantity }}</strong>
+                                    {% if log.employee_name %}
+                                        | Nhân viên: <strong>{{ log.employee_name }}</strong>
+                                    {% endif %}
+                                    {% if log.related_code %}
+                                        | Mã liên quan: <strong>{{ log.related_code }}</strong>
+                                    {% endif %}
+                                </div>
+                                {% if log.note %}
+                                <div class="small text-muted mt-1">{{ log.note }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="small text-muted">
+                                {{ log.created_at|date:"d/m/Y H:i" }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-muted">Chưa có lịch sử di chuyển.</div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

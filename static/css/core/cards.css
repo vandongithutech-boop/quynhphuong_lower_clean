@@ -1,0 +1,921 @@
+.page-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(15,23,42,.06);
+    overflow: hidden;
+}
+
+.page-card-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: #fff;
+}
+
+.page-card-title {
+    font-size: 17px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.page-card-body {
+    padding: 22px;
+}
+
+.module-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid #eef0f3;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+    color: #212529;
+    transition: all 0.2s ease;
+}
+
+.module-card:hover {
+    transform: translateY(-3px);
+    color: #198754;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+}
+
+.module-card h5 {
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.module-card p {
+    margin-bottom: 0;
+    color: #6c757d;
+}
+
+.module-card i {
+    font-size: 34px;
+    color: #198754;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.page-header {
+    position: relative;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+
+    margin-bottom: 24px;
+    padding: 18px 22px;
+
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,.65);
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.42));
+
+    backdrop-filter: blur(26px) saturate(180%);
+    -webkit-backdrop-filter: blur(26px) saturate(180%);
+
+    box-shadow:
+        0 18px 46px rgba(15,23,42,.10),
+        inset 0 1px 0 rgba(255,255,255,.85);
+}
+
+.page-header::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 27px;
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.9), transparent 30%),
+        radial-gradient(circle at 92% 18%, rgba(187,247,208,.32), transparent 28%);
+}
+
+.page-header > * {
+    position: relative;
+    z-index: 1;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 900;
+    margin: 0;
+    color: #1f2937;
+}
+
+.page-subtitle,
+.section-subtitle {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 950;
+    margin: 0;
+    color: #0f172a;
+    letter-spacing: -.03em;
+}
+
+.page-subtitle {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* =========================================================
+   PAGE CARD
+========================================================= */
+
+.page-card {
+    position: relative;
+    overflow: hidden;
+
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,.66);
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.70), rgba(255,255,255,.44));
+
+    backdrop-filter: blur(30px) saturate(185%);
+    -webkit-backdrop-filter: blur(30px) saturate(185%);
+
+    box-shadow:
+        0 24px 64px rgba(15,23,42,.11),
+        inset 0 1px 0 rgba(255,255,255,.86),
+        inset 0 -1px 0 rgba(255,255,255,.25);
+}
+
+.page-card,
+.page-card-body,
+.modern-list,
+.modern-list-card {
+    overflow: visible !important;
+}
+
+.modern-list-card {
+    position: relative;
+    z-index: 1;
+}
+
+.modern-list-card:hover,
+.modern-list-card:focus-within {
+    z-index: 100;
+}
+
+.form-select {
+    position: relative;
+    z-index: 120;
+}
+
+.page-card::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 29px;
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.86), transparent 30%),
+        radial-gradient(circle at 92% 16%, rgba(187,247,208,.24), transparent 30%),
+        radial-gradient(circle at 34% 100%, rgba(219,234,254,.18), transparent 34%);
+}
+
+.page-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.page-card-header {
+    padding: 20px 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    border-bottom: 1px solid rgba(255,255,255,.58);
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.58), rgba(255,255,255,.30));
+
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+}
+
+.page-card-body {
+    padding: 24px;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,.14));
+}
+
+.page-card-title,
+.page-card-header h4,
+.page-card-header h5 {
+    margin: 0;
+    color: #0f172a;
+    font-weight: 950;
+    letter-spacing: -.02em;
+}
+
+.page-card-subtitle,
+.page-card-header small,
+.page-card-header p {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.section-title {
+    margin: 0;
+    font-weight: 900;
+    color: #1f2937;
+
+    font-weight: 950;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-title i {
+    color: #16a34a;
+}
+
+
+.stat-card {
+    background: linear-gradient(180deg, #ffffff, #f8fafc);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+    border: 1px solid #e5e7eb;
+    min-height: 112px;
+}
+.section-subtitle {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* =========================================================
+   STAT CARD
+========================================================= */
+
+.stat-card {
+    position: relative;
+    overflow: hidden;
+
+    min-height: 116px;
+    padding: 20px;
+
+    border-radius: 26px;
+    border: 1px solid rgba(255,255,255,.68);
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.76), rgba(255,255,255,.42));
+
+    backdrop-filter: blur(26px) saturate(180%);
+    -webkit-backdrop-filter: blur(26px) saturate(180%);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+
+    box-shadow:
+        0 18px 42px rgba(15,23,42,.09),
+        inset 0 1px 0 rgba(255,255,255,.86);
+
+    transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-color .22s ease;
+}
+
+.stat-card::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 25px;
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.9), transparent 30%),
+        radial-gradient(circle at 90% 20%, rgba(187,247,208,.32), transparent 30%);
+}
+
+.stat-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow:
+        0 26px 58px rgba(15,23,42,.14),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+.stat-card p {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 700;
+
+    font-weight: 800;
+}
+
+.stat-card h3 {
+    margin: 8px 0 0;
+    font-size: 30px;
+    font-weight: 950;
+    color: #15803d;
+}
+
+.stat-card i {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    background: #dcfce7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    color: #16a34a;
+    letter-spacing: -.03em;
+}
+
+.stat-card i {
+    width: 50px;
+    height: 50px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(135deg, rgba(220,252,231,.95), rgba(255,255,255,.72));
+
+    color: #16a34a;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 25px;
+
+    border: 1px solid rgba(22,163,74,.14);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.85),
+        0 10px 22px rgba(22,163,74,.12);
+}
+
+/* =========================================================
+   MODULE CARD
+========================================================= */
+
+.module-card {
+    position: relative;
+    overflow: hidden;
+
+    min-height: 132px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+
+    text-decoration: none;
+    color: #0f172a;
+
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,.66);
+
+    padding: 24px;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.42));
+
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+
+    box-shadow:
+        0 18px 46px rgba(15,23,42,.09),
+        inset 0 1px 0 rgba(255,255,255,.86);
+
+    transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        color .22s ease;
+}
+
+.module-card::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 27px;
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.86), transparent 30%),
+        radial-gradient(circle at 90% 30%, rgba(187,247,208,.28), transparent 32%);
+}
+
+.module-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.module-card:hover {
+    transform: translateY(-5px) scale(1.01);
+    color: #15803d;
+    box-shadow:
+        0 28px 62px rgba(15,23,42,.14),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+.module-card h5 {
+    font-weight: 950;
+    margin-bottom: 6px;
+    letter-spacing: -.02em;
+}
+
+.module-card p {
+    margin-bottom: 0;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.module-card i {
+    width: 58px;
+    height: 58px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(135deg, rgba(220,252,231,.95), rgba(255,255,255,.74));
+
+    color: #16a34a;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 30px;
+
+    border: 1px solid rgba(22,163,74,.14);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.86),
+        0 12px 26px rgba(22,163,74,.14);
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+    position: relative;
+
+    padding: 56px 24px;
+    text-align: center;
+    color: #64748b;
+
+    border-radius: 26px;
+    border: 1px dashed rgba(148,163,184,.55);
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.58), rgba(255,255,255,.28));
+
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+}
+
+.empty-state i {
+    font-size: 42px;
+    display: block;
+    margin-bottom: 10px;
+    color: #16a34a;
+}
+
+.empty-state p {
+    margin: 0;
+    font-weight: 700;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 992px) {
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .page-title {
+        font-size: 21px;
+    }
+
+    .page-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .stat-card {
+        min-height: 108px;
+    }
+}
+
+/* =========================================================
+   APPLE LIQUID CONTENT CARD
+========================================================= */
+
+.glass-card {
+    position: relative;
+    overflow: hidden;
+
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,.72);
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.54));
+
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+
+    box-shadow:
+        0 22px 58px rgba(15,23,42,.10),
+        inset 0 1px 0 rgba(255,255,255,.88);
+
+    transition:
+        transform .24s ease,
+        box-shadow .24s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 34px 72px rgba(15,23,42,.14),
+        inset 0 1px 0 rgba(255,255,255,.92);
+}
+
+.glass-card::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 29px;
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.92), transparent 28%),
+        radial-gradient(circle at 90% 18%, rgba(187,247,208,.24), transparent 32%);
+}
+
+.glass-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* =========================================================
+   APPLE CONTENT LAYOUT
+========================================================= */
+
+.glass-card-body {
+    padding: 22px;
+}
+
+.glass-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+
+    margin-bottom: 18px;
+}
+
+.glass-card-title {
+    font-size: 19px;
+    font-weight: 950;
+    color: #0f172a;
+    letter-spacing: -.03em;
+}
+
+.glass-card-subtitle {
+    margin-top: 5px;
+
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 650;
+}
+
+/* =========================================================
+   APPLE STACK INFO
+========================================================= */
+
+.apple-info-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.apple-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    padding: 14px 16px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.82), rgba(248,250,252,.68));
+
+    border: 1px solid rgba(226,232,240,.9);
+}
+
+.apple-info-label {
+    font-size: 11px;
+    font-weight: 850;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+
+    color: #94a3b8;
+}
+
+.apple-info-value {
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 850;
+    line-height: 1.4;
+}
+
+/* =========================================================
+   APPLE GRID
+========================================================= */
+
+.apple-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.apple-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.apple-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+/* =========================================================
+   APPLE SECTION BLOCK
+========================================================= */
+
+.apple-section {
+    margin-top: 22px;
+}
+
+.apple-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 14px;
+
+    font-size: 15px;
+    font-weight: 900;
+    color: #0f172a;
+}
+
+.apple-section-title i {
+    color: #16a34a;
+}
+
+/* =========================================================
+   APPLE TABLE BLOCK
+========================================================= */
+
+.apple-table-block {
+    overflow: hidden;
+
+    border-radius: 22px;
+    border: 1px solid rgba(226,232,240,.9);
+
+    background: rgba(255,255,255,.72);
+}
+
+.apple-table-head {
+    padding: 14px 18px;
+
+    background:
+        linear-gradient(180deg, rgba(248,250,252,.95), rgba(241,245,249,.82));
+
+    border-bottom: 1px solid rgba(226,232,240,.9);
+
+    font-size: 11px;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+
+    color: #64748b;
+}
+
+.apple-table-row {
+    padding: 16px 18px;
+
+    border-top: 1px solid rgba(241,245,249,.95);
+
+    background: rgba(255,255,255,.82);
+
+    transition: background .18s ease;
+}
+
+.apple-table-row:hover {
+    background: rgba(240,253,244,.75);
+}
+
+/* =========================================================
+   REMOVE OLD SHADOW-SM STYLE
+========================================================= */
+
+.card.shadow-sm {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.shadow-sm {
+    box-shadow: none !important;
+}
+
+/* =========================================================
+   GLOBAL LIQUID SELECT / DROPDOWN
+========================================================= */
+
+select.form-select,
+select.form-control,
+select {
+    min-height: 48px;
+    border-radius: 18px !important;
+    border: 1px solid rgba(22, 163, 74, .28) !important;
+    background-color: rgba(255, 255, 255, .82) !important;
+    color: #0f172a !important;
+
+    font-weight: 850;
+    font-size: 14px;
+
+    padding: 0 44px 0 16px !important;
+
+    box-shadow:
+        0 12px 30px rgba(15, 23, 42, .08),
+        inset 0 1px 0 rgba(255, 255, 255, .9);
+
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+
+    cursor: pointer;
+}
+
+select.form-select:focus,
+select.form-control:focus,
+select:focus {
+    border-color: rgba(22, 163, 74, .75) !important;
+    box-shadow:
+        0 0 0 4px rgba(34, 197, 94, .18),
+        0 16px 34px rgba(15, 23, 42, .10) !important;
+    outline: none !important;
+}
+
+select option {
+    color: #0f172a;
+    background: #ffffff;
+    font-weight: 800;
+    padding: 14px;
+}
+
+select option:hover,
+select option:checked {
+    background: #bbf7d0 !important;
+    color: #064e3b !important;
+}
+
+/* Chống dropdown bị card cắt mất */
+.page-card,
+.page-card-body,
+.modern-list,
+.modern-list-card,
+.glass-card,
+.glass-card-body {
+    overflow: visible !important;
+}
+
+.modern-list-card,
+.page-card,
+.glass-card {
+    position: relative;
+}
+
+.modern-list-card:hover,
+.modern-list-card:focus-within,
+.page-card:focus-within,
+.glass-card:focus-within {
+    z-index: 100;
+}
+
+/* =========================================================
+   FIX DROPDOWN INSIDE MODAL
+========================================================= */
+
+.modal,
+.modal-dialog,
+.modal-content {
+    overflow: visible !important;
+}
+
+.modal-body {
+    overflow: visible !important;
+}
+
+.modal-scrollable,
+.modal-body-scroll,
+.processing-modal-body {
+    overflow: visible !important;
+}
+
+.modal-content {
+    position: relative;
+    z-index: 1055;
+}
+
+.modal select.form-select,
+.modal select,
+.processing-modal select.form-select,
+.processing-modal select {
+    position: relative;
+    z-index: 3000;
+}
+
+.modal .form-select:focus,
+.modal select:focus {
+    z-index: 4000;
+}
+
+/* Nếu modal cần cuộn nội dung dài thì chỉ cuộn lớp này, không cuộn trực tiếp modal-body */
+.modal-inner-scroll {
+    max-height: 60vh;
+    overflow-y: auto;
+    overflow-x: visible;
+    padding-right: 8px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 992px) {
+    .apple-grid-4,
+    .apple-grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .apple-grid-4,
+    .apple-grid-3,
+    .apple-grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .glass-card-header {
+        flex-direction: column;
+    }
+}

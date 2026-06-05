@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng ký tài khoản | QUỲNH PHƯƠNG LOWER</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/core/auth.css' %}" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="auth-page">
+
+    <div class="auth-wrapper">
+
+        <div class="auth-info-card">
+            <div>
+                <div class="auth-badge">
+                    QUỲNH PHƯƠNG LOWER
+                </div>
+
+                <h1 class="auth-title">
+                    Đăng ký tài khoản nhân viên
+                </h1>
+
+                <p class="auth-desc">
+                    Nhân viên chọn đúng thông tin của mình trong danh sách nhân sự.
+                    Sau khi gửi đăng ký, admin sẽ duyệt và cấp quyền sử dụng hệ thống.
+                </p>
+
+                <div class="auth-feature-list">
+                    <div class="auth-feature-item">
+                        <strong>1. Gửi đăng ký</strong>
+                        <span>Nhập tên đăng nhập và mật khẩu cá nhân.</span>
+                    </div>
+
+                    <div class="auth-feature-item">
+                        <strong>2. Chờ admin duyệt</strong>
+                        <span>Tài khoản chưa duyệt sẽ chưa đăng nhập được.</span>
+                    </div>
+
+                    <div class="auth-feature-item">
+                        <strong>3. Nhận quyền truy cập</strong>
+                        <span>Admin gán quyền theo bộ phận làm việc.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-muted small mt-4">
+                © QUỲNH PHƯƠNG LOWER Internal System
+            </div>
+        </div>
+
+        <div class="auth-form-card">
+
+            <h2 class="auth-form-title">Tạo tài khoản</h2>
+            <p class="auth-form-subtitle">Tài khoản sẽ được kích hoạt sau khi admin duyệt.</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label class="form-label">Nhân viên</label>
+                    {{ form.employee }}
+                    <div class="text-danger small">{{ form.employee.errors }}</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Tên đăng nhập</label>
+                    {{ form.username }}
+                    <div class="text-danger small">{{ form.username.errors }}</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Mật khẩu</label>
+                    {{ form.password1 }}
+                    <div class="text-danger small">{{ form.password1.errors }}</div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Nhập lại mật khẩu</label>
+                    {{ form.password2 }}
+                    <div class="text-danger small">{{ form.password2.errors }}</div>
+                </div>
+
+                <button type="submit" class="btn btn-success auth-submit-btn w-100">
+                    Gửi đăng ký
+                </button>
+
+                <div class="text-center mt-4">
+                    <span class="text-muted">Đã có tài khoản?</span>
+                    <a href="{% url 'accounts:login' %}" class="auth-link">
+                        Đăng nhập
+                    </a>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+.summary-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 20px;
+    border: 1px solid #eef0f3;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+}
+
+.summary-title {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 8px;
+}
+
+.summary-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #198754;
+}
+
+.summary-note {
+    font-size: 13px;
+    color: #8a8f98;
+}
+
+.empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: #8a8f98;
+    background: #f8f9fa;
+    border-radius: 16px;
+    border: 1px dashed #ced4da;
+}
+
+.empty-icon {
+    font-size: 60px;
+    color: #d1d5db;
+}
+
